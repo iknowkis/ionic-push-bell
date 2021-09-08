@@ -1,0 +1,7 @@
+{
+  "name": "push-bell",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

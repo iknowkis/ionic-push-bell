@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "push-bell",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
