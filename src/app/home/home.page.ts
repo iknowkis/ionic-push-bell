@@ -9,10 +9,11 @@ import { Storage } from '@ionic/storage';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit{
+export class HomePage implements OnInit {
   storageData = []
-  weekdays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-  
+  weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  reorderToggle = true;
+
   constructor(
     public modalController: ModalController,
     private storage: Storage,
@@ -23,7 +24,7 @@ export class HomePage implements OnInit{
       component: SettingAlarmComponent
     });
 
-    modal.onDidDismiss().then( async (e) => {
+    modal.onDidDismiss().then(async (e) => {
       this.viewStorageData();
     });
 
@@ -37,13 +38,10 @@ export class HomePage implements OnInit{
   //   return await modal.present();
   // }
 
-// 삭제할 때 알림도 삭제되도록 체크 필요
-  async removeAlarm (key) {
+  async removeAlarm(key) {
     this.viewStorageData();
-    let removeData = await this.storage.get(key).then(async list => {
-
+    await this.storage.get(key).then(async list => {
       const cancelOptions = { notifications: list };
-      console.log('cancelOptions:',cancelOptions)
       await LocalNotifications.cancel(cancelOptions);
     });
     await this.storage.remove(key);
@@ -53,17 +51,24 @@ export class HomePage implements OnInit{
   async ngOnInit() {
     this.viewStorageData();
     LocalNotifications.requestPermissions();
-    console.log(await LocalNotifications.getPending());
+    console.log('getPending:', await LocalNotifications.getPending());
+    // await LocalNotifications.addListener('localNotificationReceived', async (notification) => {
+    //  await console.log('notification received!!',notification);
+    //  });
   }
+
   async viewStorageData() {
-    this.storageData=[]
+    this.storageData = []
     const storage = await this.storage.create();
     const storageKeys = await storage.keys()
-    storageKeys.map(async(value) => this.storageData.push(await this.storage.get(value)))
+    storageKeys.map(async (value) => this.storageData.push(await this.storage.get(value)))
     console.log('storageKeys:', storageKeys) //
     console.log('storageData:', this.storageData) //
   }
-  
+
+  toggleReorder() {
+    this.reorderToggle=!this.reorderToggle;
+  }
   // async cancelNotification() {
   //   await LocalNotifications.getPending().then(list => {
   //     console.log('getPending():',list);

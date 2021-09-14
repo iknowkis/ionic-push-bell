@@ -1,8 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { IonFab, IonSlides, LoadingController, ModalController } from '@ionic/angular';
+import { IonSlides, ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
-import { weekdays } from 'moment';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-setting-alarm',
@@ -11,11 +11,11 @@ import { weekdays } from 'moment';
 })
 export class SettingAlarmComponent {
   title: string = ''
-  titlePlaceholder: string = `Alarm ${new Date().toISOString().slice(5,10)}`;
+  titlePlaceholder: string = `Alarm ${moment(new Date()).format()}`;
   content: string = '';
   notifications = []
   time: any;
-  weekdays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+  weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   weekday = []
 
   timerOff: any;
@@ -28,7 +28,6 @@ export class SettingAlarmComponent {
   constructor(
     private modalCtrl: ModalController,
     private storage: Storage,
-    private loadingCtrl: LoadingController,
   ) {
     this._storage = this.storage;
   }
@@ -51,10 +50,10 @@ export class SettingAlarmComponent {
               second: 0,
             }
           },
-        timerOff: this.timerOff,
-        workTime: this.workTime,
-        breakTime: this.breakTime,
-        breakCount: this.breakCount,
+          timerOff: this.timerOff,
+          workTime: this.workTime,
+          breakTime: this.breakTime,
+          breakCount: this.breakCount,
         }
         this.notifications.push(notificationSetting);
       })
@@ -83,7 +82,7 @@ export class SettingAlarmComponent {
       }
       this.notifications.push(notificationSetting);
     }
-  console.log('notifications:', this.notifications)
+    console.log('notifications:', this.notifications)
     return this.notifications;
   }
 
@@ -94,7 +93,7 @@ export class SettingAlarmComponent {
   dismissModal() {
     this.modalCtrl.dismiss();
   }
-  
+
   async saveAndDismissModal() {
     let onTime = Date.parse(this.time)
     let offTime = Date.parse(this.timerOff)
@@ -114,7 +113,7 @@ export class SettingAlarmComponent {
       })
     }
     for (let notification of this.notifications) {
-      await this.storage.set(notification.title, this.notifications)
+      await this.storage.set(notification.id, this.notifications)
     }
     this.modalCtrl.dismiss();
   }

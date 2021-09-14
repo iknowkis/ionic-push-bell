@@ -13,24 +13,23 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-item-divider></ion-item-divider>
 
 <ion-content>
-  <ion-slides  #slides>
+  <ion-slides #slides>
     <ion-slide>
       <ion-list>
-        <h1><ion-icon name="alarm-outline"></ion-icon></h1>
+        <h1>
+          <ion-icon name="alarm-outline"></ion-icon>
+        </h1>
         <ion-item>
           <ion-label>Title</ion-label>
-          <ion-input class="ion-text-end" type="text"
-          [(ngModel)]="title" placeholder={{titlePlaceholder}}>
+          <ion-input class="ion-text-end" type="text" [(ngModel)]="title" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label>Content</ion-label>
-          <ion-input class="ion-text-end" type="text"
-          [(ngModel)]="content" placeholder={{titlePlaceholder}}>
+          <ion-input class="ion-text-end" type="text" [(ngModel)]="content" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
@@ -48,8 +47,8 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Weekday</ion-label>
-          <ion-select class="ion-text-end" multiple="true" [(ngModel)]='weekday'>
+          <ion-label position="stacked">Weekday</ion-label>
+          <ion-select class="ion-text-end" style="font-size: 8px" multiple="true" [(ngModel)]='weekday'>
             <ion-select-option *ngFor="let day of weekdays; let i=index" value={{i}}>
               {{day}}
             </ion-select-option>
@@ -57,14 +56,14 @@
         </ion-item>
         <ion-item-divider></ion-item-divider>
 
-      <!-- 편집할 때만 보이도록 수정할 것 [(ngModel)]='weekday'-->
-      <ion-item>
-        <ion-label>Deactivate</ion-label>
-        <ion-select value='null' interface="action-sheet">
-          <ion-select-option value='id.weekday'>Enable</ion-select-option>
-          <ion-select-option value='null'>Disable</ion-select-option>
-        </ion-select>
-      </ion-item>
+        <!-- 편집할 때만 보이도록 수정할 것 [(ngModel)]='weekday'-->
+        <ion-item>
+          <ion-label>Deactivate</ion-label>
+          <ion-select value='null' interface="action-sheet">
+            <ion-select-option value='id.weekday'>Enable</ion-select-option>
+            <ion-select-option value='null'>Disable</ion-select-option>
+          </ion-select>
+        </ion-item>
 
         <!-- <ion-item>
           <ion-label>Repeat</ion-label>
@@ -83,18 +82,18 @@
 
     <ion-slide>
       <ion-list>
-        <h1><ion-icon name="timer-outline"></ion-icon></h1>
+        <h1>
+          <ion-icon name="timer-outline"></ion-icon>
+        </h1>
         <ion-item>
           <ion-label>Title</ion-label>
-          <ion-input class="ion-text-end" type="text"
-          [(ngModel)]="title" placeholder={{titlePlaceholder}}>
+          <ion-input class="ion-text-end" type="text" [(ngModel)]="title" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label>Content</ion-label>
-          <ion-input class="ion-text-end" type="text"
-          [(ngModel)]="content" placeholder={{titlePlaceholder}}>
+          <ion-input class="ion-text-end" type="text" [(ngModel)]="content" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
@@ -105,39 +104,43 @@
         </ion-item>
 
         <ion-item>
+          <ion-label>Timer off</ion-label>
+          <ion-datetime display-format="h:mm A" placeholder="_" picker-format="h:mm A" [(ngModel)]="timerOff">
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item-divider></ion-item-divider>
+
+        <ion-item>
           <ion-label>Work time</ion-label>
-          <ion-input class="ion-text-center" placeholder="_" [(ngModel)]="workTime">
+          <ion-input class="ion-text-center" type="number" placeholder="_" [(ngModel)]="workTime">
           </ion-input>
           <ion-range min="0" max="60" step="5" snaps="true" color="primary" [(ngModel)]="workTime"
             (ionFocus)="lockSwipes(true)" (ionBlur)="lockSwipes(false)">
           </ion-range>
         </ion-item>
-        
+
+        <ion-item-divider></ion-item-divider>
+
         <ion-item>
           <ion-label>Break time</ion-label>
-          <ion-input class="ion-text-center" placeholder="_" [(ngModel)]="breakTime">
+          <ion-input class="ion-text-center" type="number" placeholder="_" [(ngModel)]="breakTime">
           </ion-input>
           <ion-range min="0" max="60" step="5" snaps="true" color="danger" [(ngModel)]="breakTime"
             (ionFocus)="lockSwipes(true)" (ionBlur)="lockSwipes(false)">
           </ion-range>
         </ion-item>
-        
+
         <ion-item>
-          <ion-label>Timer off</ion-label>
-          <ion-datetime display-format="h:mm A" placeholder="_" picker-format="h:mm A" [(ngModel)]="timerOff">
-          </ion-datetime>
-        </ion-item>
-        
-        <ion-item>
-          <ion-label>Break count</ion-label>
-          <ion-input class="ion-text-center" placeholder="_" [(ngModel)]="breakCount">
+          <ion-label>Count for break</ion-label>
+          <ion-input class="ion-text-center" type="number" placeholder="_" [(ngModel)]="breakCount">
           </ion-input>
           <ion-range min="0" max="10" step="1" snaps="true" color="danger" [(ngModel)]="breakCount"
             (ionFocus)="lockSwipes(true)" (ionBlur)="lockSwipes(false)">
           </ion-range>
         </ion-item>
-        </ion-list>
-        </ion-slide>
+      </ion-list>
+    </ion-slide>
 
   </ion-slides>
 
