@@ -1,8 +1,8 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="light">
     <ion-buttons slot="start">
       <ion-button (click)="toggleReorder()">
-        <ion-icon name="swap-vertical-outline"></ion-icon>
+        <ion-icon name="swap-vertical-outline" color="primary"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>
@@ -10,7 +10,7 @@
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openSettingAlarmModal()">
-        <ion-icon slot="icon-only" name="add"></ion-icon>
+        <ion-icon slot="icon-only" name="add" color="primary"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -34,8 +34,7 @@
         </ion-item>
         
         <ion-card-content style="padding-bottom: 0.6rem;">
-          <b>{{dataList[0].schedule.on.hour}}:
-            {{dataList[0].schedule.on.minute < 10 ?
+          <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute < 10 ?
               '0' + dataList[0].schedule.on.minute : dataList[0].schedule.on.minute}}</b>
           <b *ngIf="dataList[0].timerOff"> - {{dataList[0].timerOff.slice(11,16)}}<br/></b>
         
@@ -73,6 +72,9 @@
       </h1>
     </ion-slide>
   </ion-card>
+
+  <!-- 저장소, 알림 clear 버튼 만들기 -->
+
   <!-- <ion-button>activate</ion-button> <br/> -->
   <!-- <ion-button color="danger" (click)='cancelNotification()'>deactivate</ion-button> <br />
        <ion-button color="danger" (click)='removeNotification()'>remove all</ion-button> <br /> -->

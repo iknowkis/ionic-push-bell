@@ -12,13 +12,12 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class SettingAlarmComponent {
   title: string = null;
-  titlePlaceholder: string = moment(new Date()).format().slice(0,16);
+  titlePlaceholder: string = `Setting at ${moment(new Date()).format().slice(5,10)}`;
   content: string = null;
   notifications = []
   time: any;
   weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   weekday = []
-
   timerOff: any;
   workTime = 0;
   breakTime = 0;
@@ -43,7 +42,7 @@ export class SettingAlarmComponent {
 
   createNotificaiton(key:string, id:number, time:Date) {
     var notificationSetting: object = []
-
+    if(this.weekday.length==0) this.weekday=[time.getDay()]
     if (this.breakTime == 0) {
       this.weekday.forEach(day => {
         notificationSetting = {
@@ -51,7 +50,7 @@ export class SettingAlarmComponent {
           body: this.content == null ? this.titlePlaceholder : this.content,
           id: id,
           schedule: {
-            on: {
+            on: { // 알림 전송 시간 제대로 오는지
               weekday: +day,
               hour: time.getHours(),
               minute: time.getMinutes(),
@@ -77,18 +76,14 @@ export class SettingAlarmComponent {
             hour: time.getHours(),
             minute: time.getMinutes(),
             second: 0,
-          }
+          },
+          // at: time
         },
         key: key,
         timerOff: this.timerOff,
         workTime: this.workTime,
         breakTime: this.breakTime,
         breakCount: this.breakCount,
-        // at: new Date(Date.now() + 1000),
-        // allowWhileIdle:true,
-        // every:'minute',
-        // count: 3,
-        // actionTypeId:'CHAT_MSG',
       }
       this.notifications.push(notificationSetting);
     }
@@ -99,21 +94,31 @@ export class SettingAlarmComponent {
   }
 
   async saveAndDismissModal() {
-    let onTime = Date.parse(this.time);
-    let offTime = Date.parse(this.timerOff);
-    let count = this.breakCount;
     let uuid = uuidv4();
+    let count = this.breakCount;
+    let onTime = Date.parse(this.time);
 
-    if (this.timerOff) {
+    // console.log('offTime:', offTime)
+    // console.log('this.timerOff:', this.timerOff)
+
+    if (this.breakTime) {
+      if(count==0&&this.timerOff==undefined) {count=10} // Exceoption 처리로 일단은 count 10번으로
+      let offTime = this.timerOff != undefined ? Date.parse(this.timerOff) :
+      onTime + ((this.workTime + this.breakTime) * count * 1000 * 60)
       while (onTime < offTime) {
         const time = new Date(onTime)
         let randomId = Math.random() * 100000
-        let dataList = await this.createNotificaiton(uuid, randomId, time)
+        await this.createNotificaiton(uuid, randomId, time)
         console.log('time:',time)
 
         onTime += await (this.workTime * 1000 * 60)
         await this.createRestNotificaiton(onTime)
         onTime += await (this.breakTime * 1000 * 60)
+        
+        if(await this.breakCount!=0) {
+          await count--;
+          if(await count==0) break;
+        }
       }
     }
     else {

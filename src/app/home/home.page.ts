@@ -30,10 +30,20 @@ export class HomePage implements OnInit {
     return await modal.present();
   }
 
+  // async edit() {
+  //   const modal = await this.modalController.create({
+  //     component: SettingBreakTimerComponent,
+  //     componentProps: {
+  //       title: this.storageData[0].title,
+  //       content: this.storageData[0].content,
+  //     },
+  //   });
+  //   return await modal.present();
+  // }
+  
   async editSettingAlarmModal() {
     const modal = await this.modalController.create({
       component: SettingBreakTimerComponent,
-      // componentProps: {   title: 'Test Edit'},
     });
     return await modal.present();
   }
@@ -41,10 +51,11 @@ export class HomePage implements OnInit {
   async ngOnInit() {
     this.viewStorageData();
     LocalNotifications.requestPermissions();
-    console.log('getPending:', await LocalNotifications.getPending());
+    // console.log('getPending:', await LocalNotifications.getPending());
     // await LocalNotifications.addListener('localNotificationReceived', async (notification) => {
-    //  await console.log('notification received!!',notification);
-    //  });
+    //   await console.log('notification received!!', notification);
+    // });
+    // 예약 알림 전체 취소
     // await LocalNotifications.getPending().then(list => {
       //     console.log('getPending():',list);
       //     if (!list.notifications.length) return;
@@ -58,9 +69,6 @@ export class HomePage implements OnInit {
     const storage = await this.storage.create();
     const storageKeys = await storage.keys()
     storageKeys.map(async (value) => this.storageData.push(await this.storage.get(value)))
-  }
-
-  getKey(dataList) {
   }
 
   async removeAlarm1(key) {
@@ -88,15 +96,15 @@ export class HomePage implements OnInit {
   public onItemReorder({ detail }: any) {
     detail.complete(true);
   }
+
   toggleReorder() {
     this.reorderToggle = !this.reorderToggle;
   }
-  // async cancelNotification() {
-  //   await LocalNotifications.getPending().then(list => {
-  //     console.log('getPending():',list);
-  //     if (!list.notifications.length) return;
-  //     const notifications = list.notifications.map(li => { return { id: li.id }; });
-  //     return LocalNotifications.cancel({ notifications })
-  //   });
+  
+  // items = [1, 2, 3, 4, 5];
+  // doReorder(event: CustomEvent) {
+  //   console.log('Before complete', this.items);
+  //   this.items = event.detail.complete(this.items);
+  //   console.log('After complete', this.items);
   // }
 }
