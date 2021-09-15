@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-setting-break-timer',
@@ -7,8 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SettingBreakTimerComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private modalCtrl: ModalController,) { }
 
   ngOnInit() {}
-
+  dismissModal() {
+    this.modalCtrl.dismiss();
+  }
 }
