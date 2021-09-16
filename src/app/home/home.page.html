@@ -18,7 +18,7 @@
 
 <ion-content [fullscreen]="true">
   <ion-reorder-group (ionItemReorder)="onItemReorder($event)" [disabled]="reorderToggle">
-    <ion-card *ngFor="let dataList of storageData.reverse()">
+    <ion-card *ngFor="let dataList of storageData">
       <ion-reorder>
         <ion-item>
           <ion-icon *ngIf="dataList[0].breakTime == 0" name="alarm-outline"
@@ -34,9 +34,11 @@
         </ion-item>
         
         <ion-card-content style="padding-bottom: 0.6rem;">
-          <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute < 10 ?
-              '0' + dataList[0].schedule.on.minute : dataList[0].schedule.on.minute}}</b>
-          <b *ngIf="dataList[0].timerOff"> - {{dataList[0].timerOff.slice(11,16)}}<br/></b>
+          <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute
+            < 10 ? '0' : ''}}{{dataList[0].schedule.on.minute}}</b>
+          <b *ngIf="dataList[0].timerOff">
+            - {{dataList[0].timerOff.getHours()}}:{{dataList[0].timerOff.getMinutes()
+            < 10 ? '0' : ''}}{{dataList[0].timerOff.getMinutes()}}<br/></b>
         
         </ion-card-content>
         <ion-card-content style="padding-top:0px; padding-right:2px">
@@ -54,7 +56,7 @@
             Work: {{dataList[0].workTime}}m
           </ion-chip>
           <ion-chip *ngIf="dataList[0].breakTime" outline color="danger">
-            Rest: {{dataList[0].workTime}}m
+            Rest: {{dataList[0].breakTime}}m
           </ion-chip>
           <ion-chip *ngIf="dataList[0].breakCount" outline color="danger">
             Count: {{dataList[0].breakCount}}
@@ -66,7 +68,7 @@
   </ion-reorder-group>
 
   <ion-card *ngIf="storageData.length == 0">
-    <ion-slide>
+    <ion-slide (click)="openSettingAlarmModal()">
       <h1>
         <ion-icon name="alarm-outline"></ion-icon>
       </h1>
@@ -79,3 +81,10 @@
   <!-- <ion-button color="danger" (click)='cancelNotification()'>deactivate</ion-button> <br />
        <ion-button color="danger" (click)='removeNotification()'>remove all</ion-button> <br /> -->
 </ion-content>
+
+<ion-button (click)="getPending()">
+  pending
+</ion-button>
+<ion-button color="danger" (click)="clear()">
+  clear
+</ion-button>

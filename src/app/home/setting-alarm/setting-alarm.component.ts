@@ -40,22 +40,24 @@ export class SettingAlarmComponent {
     this.modalCtrl.dismiss();
   }
 
-  createNotificaiton(key:string, id:number, time:Date) {
+  createNotificaiton(key:string, time:Date) {
     var notificationSetting: object = []
-    if(this.weekday.length==0) this.weekday=[time.getDay()]
+    if(this.weekday.length==0) this.weekday = [time.getDay()]
     if (this.breakTime == 0) {
       this.weekday.forEach(day => {
         notificationSetting = {
           title: this.title == null ? this.titlePlaceholder : this.title,
           body: this.content == null ? this.titlePlaceholder : this.content,
-          id: id,
+          id: Math.random() * 100000,
           schedule: {
-            on: { // 알림 전송 시간 제대로 오는지
+            on: {
               weekday: +day,
               hour: time.getHours(),
               minute: time.getMinutes(),
               second: 0,
-            }
+            },
+            at: time,
+            repeats: true,
           },
           key: key,
           timerOff: this.timerOff,
@@ -70,14 +72,14 @@ export class SettingAlarmComponent {
       notificationSetting = {
         title: this.title == null ? this.titlePlaceholder : this.title,
         body: this.content == null ? this.titlePlaceholder : this.content,
-        id: id,
+        id: Math.random() * 100000,
         schedule: {
           on: {
             hour: time.getHours(),
             minute: time.getMinutes(),
             second: 0,
           },
-          // at: time
+          at: time
         },
         key: key,
         timerOff: this.timerOff,
@@ -88,30 +90,33 @@ export class SettingAlarmComponent {
       this.notifications.push(notificationSetting);
     }
     return this.notifications.map(e => {
-      console.log('Alarm create !',e);
       LocalNotifications.schedule({ notifications: [e] });
+      console.log('Alarm create !',e);
     });
   }
 
   async saveAndDismissModal() {
     let uuid = uuidv4();
-    let count = this.breakCount;
     let onTime = Date.parse(this.time);
-
-    // console.log('offTime:', offTime)
-    // console.log('this.timerOff:', this.timerOff)
-
-    if (this.breakTime) {
-      if(count==0&&this.timerOff==undefined) {count=10} // Exceoption 처리로 일단은 count 10번으로
-      let offTime = this.timerOff != undefined ? Date.parse(this.timerOff) :
+    onTime = onTime - (onTime % (60 * 1000))
+    // Exception 처리로 count 10번으로 세팅
+    let count = this.breakCount == 0 && this.breakTime!=0 && this.timerOff==undefined ?
+      this.breakCount= 10 : this.breakCount;
+    // 푸시 마감 시간 지정
+    let offTime = this.timerOff != undefined ? Date.parse(this.timerOff) :
       onTime + ((this.workTime + this.breakTime) * count * 1000 * 60)
+    // Rest count만 입력되었다면 푸시 마감 시간 지정
+    this.timerOff = this.timerOff != undefined ? this.timerOff :
+      new Date(offTime - (offTime % 60 * 1000))
+    // 푸시 시작 시간 지정
+    let time = new Date(onTime - (onTime % 60 * 1000))
+    
+    if (this.breakTime) {
       while (onTime < offTime) {
-        const time = new Date(onTime)
-        let randomId = Math.random() * 100000
-        await this.createNotificaiton(uuid, randomId, time)
-        console.log('time:',time)
-
+        time = new Date(onTime)
+        await this.createNotificaiton(uuid, time)
         onTime += await (this.workTime * 1000 * 60)
+        
         await this.createRestNotificaiton(onTime)
         onTime += await (this.breakTime * 1000 * 60)
         
@@ -122,14 +127,12 @@ export class SettingAlarmComponent {
       }
     }
     else {
-      const time = new Date(onTime)
-      let randomId = Math.random() * 100000
-      this.createNotificaiton(uuid, randomId, time)
+      this.createNotificaiton(uuid, time)
     }
     await this.storage.set(uuid, this.notifications)
     this.modalCtrl.dismiss();
   }
-
+  
   async createRestNotificaiton(time: number) {
     const restTime = new Date(time)
     console.log('restTime:',restTime);

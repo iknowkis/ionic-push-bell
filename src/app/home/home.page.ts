@@ -51,36 +51,50 @@ export class HomePage implements OnInit {
   async ngOnInit() {
     this.viewStorageData();
     LocalNotifications.requestPermissions();
-    // console.log('getPending:', await LocalNotifications.getPending());
+    console.log('getPending:', await LocalNotifications.getPending());
     // await LocalNotifications.addListener('localNotificationReceived', async (notification) => {
     //   await console.log('notification received!!', notification);
     // });
     // 예약 알림 전체 취소
     // await LocalNotifications.getPending().then(list => {
-      //     console.log('getPending():',list);
-      //     if (!list.notifications.length) return;
-      //     const notifications = list.notifications.map(li => { return { id: li.id }; });
-      //     return LocalNotifications.cancel({ notifications })
-      //   });
+    //       console.log('getPending():',list);
+    //       if (!list.notifications.length) return;
+    //       const notifications = list.notifications.map(li => { return { id: li.id }; });
+    //       return LocalNotifications.cancel({ notifications })
+    //     });
+    // await LocalNotifications.removeAllListeners();
+  }
+
+  async getPending() {
+    let pending = await LocalNotifications.getPending();
+    console.log('pending', pending);
+  }
+
+  async clear() {
+    await LocalNotifications.getPending().then(list => {
+          console.log('getPending():',list);
+          if (!list.notifications.length) return;
+          const notifications = list.notifications.map(li => { return { id: li.id }; });
+          return LocalNotifications.cancel({ notifications })
+        });
+    await LocalNotifications.removeAllListeners();
   }
 
   async viewStorageData() {
     this.storageData = []
     const storage = await this.storage.create();
-    const storageKeys = await storage.keys()
-    storageKeys.map(async (value) => this.storageData.push(await this.storage.get(value)))
+    await storage.forEach((value) => {
+      this.storageData.push(value);
+    })
+    this.storageData.sort((firstEl, nextEl) => firstEl[0].schedule.at - nextEl[0].schedule.at)
   }
 
   async removeAlarm1(key) {
-    console.log(key);
     await key.map(data=> this.storage.get(data.id)).then(async list => {
-      console.log(list);
       const cancelOptions = { notifications: list };
-      console.log(cancelOptions);
       await LocalNotifications.cancel(cancelOptions);
       await this.storage.remove(key);
     });
-
     await this.viewStorageData();
   }
 
@@ -93,7 +107,7 @@ export class HomePage implements OnInit {
     this.viewStorageData();
   }
 
-  public onItemReorder({ detail }: any) {
+  onItemReorder({ detail }: any) {
     detail.complete(true);
   }
 
