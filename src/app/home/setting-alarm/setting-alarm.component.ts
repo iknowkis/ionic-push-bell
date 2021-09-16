@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class SettingAlarmComponent {
   title: string = null;
-  titlePlaceholder: string = `Setting at ${moment(new Date()).format().slice(5,10)}`;
+  titlePlaceholder: string = `Setting at ${new Date().getMonth()}/${new Date().getDay()} ${new Date().getHours()}:${new Date().getMinutes() < 10 ? '0'+new Date().getMinutes():new Date().getMinutes()}`;
   content: string = null;
   notifications = []
   time: any;
@@ -32,15 +32,11 @@ export class SettingAlarmComponent {
     this._storage = this.storage;
   }
   
-  set(key: string, value: any) {
-    this._storage?.set(key, value);
-  }
-
   dismissModal() {
     this.modalCtrl.dismiss();
   }
 
-  createNotificaiton(key:string, time:Date) {
+  workNotificaiton(key:string, time:Date) {
     var notificationSetting: object = []
     if(this.weekday.length==0) this.weekday = [time.getDay()]
     if (this.breakTime == 0) {
@@ -89,10 +85,6 @@ export class SettingAlarmComponent {
       }
       this.notifications.push(notificationSetting);
     }
-    return this.notifications.map(e => {
-      LocalNotifications.schedule({ notifications: [e] });
-      console.log('Alarm create !',e);
-    });
   }
 
   async saveAndDismissModal() {
@@ -114,12 +106,12 @@ export class SettingAlarmComponent {
     if (this.breakTime) {
       while (onTime < offTime) {
         time = new Date(onTime)
-        await this.createNotificaiton(uuid, time)
+        await this.workNotificaiton(uuid, time)
         onTime += await (this.workTime * 1000 * 60)
         
-        await this.createRestNotificaiton(onTime)
+        await this.breakNotificaiton(uuid, onTime)
         onTime += await (this.breakTime * 1000 * 60)
-        
+
         if(await this.breakCount!=0) {
           await count--;
           if(await count==0) break;
@@ -127,25 +119,40 @@ export class SettingAlarmComponent {
       }
     }
     else {
-      this.createNotificaiton(uuid, time)
+      this.workNotificaiton(uuid, time)
     }
     await this.storage.set(uuid, this.notifications)
     this.modalCtrl.dismiss();
+
+    // Push 보내기
+    this.notifications.map(e => {
+      LocalNotifications.schedule({ notifications: [e] });
+      console.log('Alarm create !', e);
+    });
   }
-  
-  async createRestNotificaiton(time: number) {
-    const restTime = new Date(time)
-    console.log('restTime:',restTime);
-    await LocalNotifications.schedule({
-      notifications: [{
-          title: 'Time for rest !',
-          body: `It's time for rest`,
+
+  set(key: string, value: any) {
+    this._storage?.set(key, value);
+  }
+
+  async breakNotificaiton(key:string, time: number) {
+    var breakNotificationSetting: object = []
+    const breakTime = new Date(time)
+    console.log('breakTime:',breakTime);
+    breakNotificationSetting={
+          title: 'Time for break !',
+          body: `It's time for break`,
           id: Math.random() * 100000,
           schedule: {
-            at: restTime
-          }
-        }]
-    })
+            at: breakTime
+          },
+          key: key,
+          timerOff: this.timerOff, // console.log()
+          workTime: this.workTime,
+          breakTime: this.breakTime,
+          breakCount: this.breakCount,
+        }
+    this.notifications.push(breakNotificationSetting);
   }
 
   // For slides

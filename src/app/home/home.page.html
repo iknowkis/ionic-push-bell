@@ -1,8 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="light">
     <ion-buttons slot="start">
-      <ion-button (click)="toggleReorder()">
-        <ion-icon name="swap-vertical-outline" color="primary"></ion-icon>
+      <ion-button (click)="editSettingOption()">
+        <ion-icon name="build-outline" color="primary"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>
@@ -35,10 +35,13 @@
         
         <ion-card-content style="padding-bottom: 0.6rem;">
           <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute
-            < 10 ? '0' : ''}}{{dataList[0].schedule.on.minute}}</b>
-          <b *ngIf="dataList[0].timerOff">
+            < 10 ? '0' : ''}}{{dataList[0].schedule.on.minute}}
+          </b>
+          <b *ngIf="dataList[0].breakTime!=0">
             - {{dataList[0].timerOff.getHours()}}:{{dataList[0].timerOff.getMinutes()
-            < 10 ? '0' : ''}}{{dataList[0].timerOff.getMinutes()}}<br/></b>
+            < 10 ? '0' : ''}}{{dataList[0].timerOff.getMinutes()}}
+            <br/>
+          </b>
         
         </ion-card-content>
         <ion-card-content style="padding-top:0px; padding-right:2px">
@@ -74,7 +77,6 @@
       </h1>
     </ion-slide>
   </ion-card>
-
   <!-- 저장소, 알림 clear 버튼 만들기 -->
 
   <!-- <ion-button>activate</ion-button> <br/> -->
@@ -82,9 +84,4 @@
        <ion-button color="danger" (click)='removeNotification()'>remove all</ion-button> <br /> -->
 </ion-content>
 
-<ion-button (click)="getPending()">
-  pending
-</ion-button>
-<ion-button color="danger" (click)="clear()">
-  clear
-</ion-button>
+<ion-button size="small" (click)="button()">Sotable Toggle</ion-button>

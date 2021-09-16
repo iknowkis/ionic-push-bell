@@ -6,6 +6,7 @@ import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
 import { SettingAlarmModule } from './setting-alarm/setting-alarm.module';
+import { SettingOptionModule } from './setting-option/setting-option.module';
 
 
 @NgModule({
@@ -15,7 +16,10 @@ import { SettingAlarmModule } from './setting-alarm/setting-alarm.module';
     IonicModule,
     HomePageRoutingModule,
     SettingAlarmModule,
+    SettingOptionModule,
   ],
-  declarations: [HomePage]
+  declarations: [
+    HomePage
+  ],
 })
 export class HomePageModule {}
