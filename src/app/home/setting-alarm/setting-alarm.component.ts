@@ -61,7 +61,8 @@ export class SettingAlarmComponent {
             workTime: this.workTime,
             breakTime: this.breakTime,
             breakCount: this.breakCount,
-          }
+          },
+          sound: "beep.wav"
         }
         await this.notifications.push(notificationSetting);
       })
@@ -79,15 +80,16 @@ export class SettingAlarmComponent {
           },
           // at: time
         },
-          extra: {
-            key: key,
-            timerOff: new Date(this.timerOff),
-            workTime: this.workTime,
-            breakTime: this.breakTime,
-            breakCount: this.breakCount,
-          }
-      }
-      await this.notifications.push(notificationSetting);
+        sound: "beep.wav",
+        extra: {
+          key: key,
+          timerOff: new Date(this.timerOff),
+          workTime: this.workTime,
+          breakTime: this.breakTime,
+          breakCount: this.breakCount,
+        }
+      },
+        await this.notifications.push(notificationSetting);
     }
   }
 
@@ -159,7 +161,8 @@ export class SettingAlarmComponent {
             workTime: this.workTime,
             breakTime: this.breakTime,
             breakCount: this.breakCount,
-          }
+          },
+          sound: "beep.wav"
         }
     return await this.notifications.push(breakNotificationSetting);
   }
