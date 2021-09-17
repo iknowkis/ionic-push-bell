@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalNotifications } from '@capacitor/local-notifications';
+import { LocalNotifications, LocalNotificationSchema } from '@capacitor/local-notifications';
 import { ModalController } from '@ionic/angular';
 import { SettingAlarmComponent } from './setting-alarm/setting-alarm.component';
 import { Storage } from '@ionic/storage';
 import { SettingBreakTimerComponent } from './setting-break-timer/setting-break-timer.component';
 import { SettingOptionComponent } from './setting-option/setting-option.component';
+import { OverlayEventDetail } from '@ionic/core';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,7 @@ import { SettingOptionComponent } from './setting-option/setting-option.componen
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  storageData = []
+  storageData:Array<Array<LocalNotificationSchema>> = []
   weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   reorderToggle = true;
 
@@ -20,6 +21,7 @@ export class HomePage implements OnInit {
     public modalController: ModalController,
     private storage: Storage,
   ) { }
+
 //this.reorderToggle = this.settingOption.offerReorderToggle() 
   async openSettingAlarmModal() {
     const modal = await this.modalController.create({
@@ -51,9 +53,17 @@ export class HomePage implements OnInit {
 
   async editSettingOption() {
     const modal = await this.modalController.create({
+      componentProps:{
+        _reorderToggle:this.reorderToggle,
+      },
       component: SettingOptionComponent,
     });
-    return await modal.present();
+    modal.present();
+    modal.onDidDismiss().then(async (detail: OverlayEventDetail) => {
+      this.reorderToggle = detail.data;
+      console.log(this.reorderToggle);
+      this.viewStorageData();
+    });
   }
 
   async ngOnInit() {
@@ -62,8 +72,7 @@ export class HomePage implements OnInit {
     // await LocalNotifications.addListener('localNotificationReceived', async (notification) => {
     //   await console.log('notification received!!', notification);
     // });
-    // 예약 알림 전체 취소
-    console.log('RRRRRRRR:',this.reorderToggle);
+    console.log('reorderToggle value:',this.reorderToggle);
   }
   async viewStorageData() {
     this.storageData = []
@@ -71,7 +80,7 @@ export class HomePage implements OnInit {
     await storage.forEach((value) => {
       this.storageData.push(value);
     })
-    this.storageData.sort((firstEl, nextEl) => firstEl[0].schedule.at - nextEl[0].schedule.at)
+    this.storageData.sort((firstEl:any, nextEl:any) => firstEl[0].schedule.at - nextEl[0].schedule.at)
   }
 
   async removeAlarm(key) {
@@ -84,15 +93,33 @@ export class HomePage implements OnInit {
     this.viewStorageData();
   }
 
-  async removeAlarm1(key) {
-    await this.storage.get(key).then(async list => {
-      list.map(async e=> {
-      const cancelOptions = { notifications: e };
-      await LocalNotifications.cancel(cancelOptions);
-      })
-      await this.storage.remove(key);
-    });
-    await this.viewStorageData();
+  // async removeAlarm1(key) {
+  //   await this.storage.get(key).then(async list => {
+  //     list.map(async e=> {
+  //     const cancelOptions = { notifications: e };
+  //     await LocalNotifications.cancel(cancelOptions);
+  //     })
+  //     await this.storage.remove(key);
+  //   });
+  //   await this.viewStorageData();
+  // }
+
+  async clear() {
+    await LocalNotifications.getPending().then(list => {
+          console.log('getPending():',list);
+          if (!list.notifications.length) return;
+          const notifications = list.notifications.map(li => { return { id: li.id }; });
+          return LocalNotifications.cancel({ notifications })
+        });
+    await LocalNotifications.removeAllListeners();
+    await await this.storage.clear();
+    this.viewStorageData();
+  }
+
+  // 삭제 예정
+  async getPending() {
+    let pending = await LocalNotifications.getPending();
+    console.log('pending', pending);
   }
 
   // For reorder

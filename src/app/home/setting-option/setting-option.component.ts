@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { ModalController } from '@ionic/angular';
 import { HomePage } from '../home.page';
+import { Storage } from '@ionic/storage';
 
 @Component({
   selector: 'app-setting-option',
@@ -14,16 +15,16 @@ export class SettingOptionComponent{
 
   constructor(
     private modalCtrl: ModalController,
-    private homPage: HomePage,
-    ) {this._reorderToggle = this.homPage.reorderToggle }
+    private storage: Storage,
+    ) { }
 
    changeReorderToggle() {
-    this.homPage.reorderToggle = false;
-    this.dismissModal();
+    console.log('in modal: ', !this._reorderToggle);
+    this.modalCtrl.dismiss(!this._reorderToggle);
    }
 
   dismissModal() {
-    this.modalCtrl.dismiss();
+    this.modalCtrl.dismiss(this._reorderToggle);
   }
 
   async getPending() {
@@ -40,6 +41,7 @@ export class SettingOptionComponent{
           return LocalNotifications.cancel({ notifications })
         });
     await LocalNotifications.removeAllListeners();
+    await await this.storage.clear();
     this.dismissModal();
   }
 }

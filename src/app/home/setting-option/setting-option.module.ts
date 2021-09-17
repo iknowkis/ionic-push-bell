@@ -15,8 +15,5 @@ import { HomePage } from '../home.page';
   declarations: [
     SettingOptionComponent
   ],
-  providers: [
-    HomePage
-  ]
 })
 export class SettingOptionModule { }

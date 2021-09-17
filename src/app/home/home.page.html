@@ -21,49 +21,52 @@
     <ion-card *ngFor="let dataList of storageData">
       <ion-reorder>
         <ion-item>
-          <ion-icon *ngIf="dataList[0].breakTime == 0" name="alarm-outline"
+          <ion-icon *ngIf="dataList[0].extra.workTime == 0" name="alarm-outline"
               slot="start"></ion-icon>
-          <ion-icon *ngIf="dataList[0].breakTime || dataList[0].breakCount" name="timer-outline"
+          <ion-icon *ngIf="dataList[0].extra.workTime != 0" name="timer-outline"
               slot="start"></ion-icon>
           <ion-label>{{dataList[0].title}}</ion-label>
+
           <ion-button fill="outline" slot="end" (click)="editSettingAlarmModal()">Edit
           </ion-button>
           <ion-button fill="outline" color="danger" slot="end"
-              (click)="removeAlarm(dataList[0].key)">Del
+              (click)="removeAlarm(dataList[0].extra.key)">Del
           </ion-button>
         </ion-item>
-        
-        <ion-card-content style="padding-bottom: 0.6rem;">
+
+          <ion-card-content style="padding-bottom: 0.6rem;">
           <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute
             < 10 ? '0' : ''}}{{dataList[0].schedule.on.minute}}
           </b>
-          <b *ngIf="dataList[0].breakTime!=0">
-            - {{dataList[0].timerOff.getHours()}}:{{dataList[0].timerOff.getMinutes()
-            < 10 ? '0' : ''}}{{dataList[0].timerOff.getMinutes()}}
+
+          <b *ngIf="dataList[0].extra.breakTime">
+            - {{dataList[0].extra.timerOff.getHours()}}:{{dataList[0].extra.timerOff.getMinutes()
+            < 10 ? '0' : ''}}{{dataList[0].extra.timerOff.getMinutes()}}
             <br/>
           </b>
-        
         </ion-card-content>
+
         <ion-card-content style="padding-top:0px; padding-right:2px">
           <div class="ion-margin-bottom">
             {{dataList[0].body}}
           </div>
 
           <ion-col *ngFor="let data of dataList">
-            <ion-chip *ngIf="data.schedule.on.weekday>=0" color="dark">
+            <ion-chip *ngIf="dataList[0].extra.workTime == 0" color="dark">
               {{weekdays[data.schedule.on.weekday].slice(0,3).toUpperCase()}}
             </ion-chip>
           </ion-col>
           
-          <ion-chip *ngIf="dataList[0].workTime" outline color="primary">
-            Work: {{dataList[0].workTime}}m
+          <ion-chip *ngIf="dataList[0].extra.workTime" outline color="primary">
+            Work: {{dataList[0].extra.workTime}}m
           </ion-chip>
-          <ion-chip *ngIf="dataList[0].breakTime" outline color="danger">
-            Rest: {{dataList[0].breakTime}}m
+
+          <ion-chip *ngIf="dataList[0].extra.breakTime" outline color="danger">
+            Rest: {{dataList[0].extra.breakTime}}m
           </ion-chip>
-          <ion-chip *ngIf="dataList[0].breakCount" outline color="danger">
-            Count: {{dataList[0].breakCount}}
-            <!-- 반복될 때 숫자 감소 dataList.breakCount-1 -->
+
+          <ion-chip *ngIf="dataList[0].extra.breakCount" outline color="danger">
+            Count: {{dataList[0].extra.breakCount}}
           </ion-chip>
         </ion-card-content>
       </ion-reorder>
@@ -77,11 +80,9 @@
       </h1>
     </ion-slide>
   </ion-card>
-  <!-- 저장소, 알림 clear 버튼 만들기 -->
-
-  <!-- <ion-button>activate</ion-button> <br/> -->
-  <!-- <ion-button color="danger" (click)='cancelNotification()'>deactivate</ion-button> <br />
-       <ion-button color="danger" (click)='removeNotification()'>remove all</ion-button> <br /> -->
 </ion-content>
 
-<ion-button size="small" (click)="button()">Sotable Toggle</ion-button>
+<!-- <ion-button color="danger" (click)="clear()">Clear</ion-button>
+<ion-button color="warning" (click)="getPending()">Pending</ion-button>
+<ion-button color="primary" (click)="viewStorageData()">Refresh</ion-button>
+<ion-button color="dark" (click)="button()">Sotable toggle vlaue check</ion-button> -->

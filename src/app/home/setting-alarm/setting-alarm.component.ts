@@ -2,7 +2,6 @@ import { Component, ViewChild } from '@angular/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { IonSlides, ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
-import * as moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
@@ -15,13 +14,14 @@ export class SettingAlarmComponent {
   titlePlaceholder: string = `Setting at ${new Date().getMonth()}/${new Date().getDay()} ${new Date().getHours()}:${new Date().getMinutes() < 10 ? '0'+new Date().getMinutes():new Date().getMinutes()}`;
   content: string = null;
   notifications = []
-  time: any;
+  time: Date;
   weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   weekday = []
-  timerOff: any;
+  timerOff: Date;
   workTime = 0;
   breakTime = 0;
   breakCount = 0;
+  repeatValue: boolean;
 
   private _storage: Storage | null = null;
 
@@ -36,15 +36,15 @@ export class SettingAlarmComponent {
     this.modalCtrl.dismiss();
   }
 
-  workNotificaiton(key:string, time:Date) {
+  async workNotificaiton(key:string, time:Date) {
     var notificationSetting: object = []
-    if(this.weekday.length==0) this.weekday = [time.getDay()]
+    if(this.weekday.length==0) {this.weekday = [time.getDay()]}
     if (this.breakTime == 0) {
-      this.weekday.forEach(day => {
+      this.weekday.forEach(async day => {
         notificationSetting = {
           title: this.title == null ? this.titlePlaceholder : this.title,
           body: this.content == null ? this.titlePlaceholder : this.content,
-          id: Math.random() * 100000,
+          id: Math.floor(Math.random() * Math.pow(10,8)),
           schedule: {
             on: {
               weekday: +day,
@@ -52,65 +52,76 @@ export class SettingAlarmComponent {
               minute: time.getMinutes(),
               second: 0,
             },
-            at: time,
-            repeats: true,
+            // at: time,
+            // repeats: this.repeatValue = new Date(Date.now()) == time ? true: false,
           },
-          key: key,
-          timerOff: this.timerOff,
-          workTime: this.workTime,
-          breakTime: this.breakTime,
-          breakCount: this.breakCount,
+          extra: {
+            key: key,
+            timerOff: new Date(this.timerOff),
+            workTime: this.workTime,
+            breakTime: this.breakTime,
+            breakCount: this.breakCount,
+          }
         }
-        this.notifications.push(notificationSetting);
+        await this.notifications.push(notificationSetting);
       })
     }
     else {
       notificationSetting = {
         title: this.title == null ? this.titlePlaceholder : this.title,
         body: this.content == null ? this.titlePlaceholder : this.content,
-        id: Math.random() * 100000,
+        id: Math.floor(Math.random() * Math.pow(10,8)),
         schedule: {
           on: {
             hour: time.getHours(),
             minute: time.getMinutes(),
             second: 0,
           },
-          at: time
+          // at: time
         },
-        key: key,
-        timerOff: this.timerOff,
-        workTime: this.workTime,
-        breakTime: this.breakTime,
-        breakCount: this.breakCount,
+          extra: {
+            key: key,
+            timerOff: new Date(this.timerOff),
+            workTime: this.workTime,
+            breakTime: this.breakTime,
+            breakCount: this.breakCount,
+          }
       }
-      this.notifications.push(notificationSetting);
+      await this.notifications.push(notificationSetting);
     }
   }
 
+  set(key: string, value: any) {
+    this._storage?.set(key, value);
+  }
+  
   async saveAndDismissModal() {
     let uuid = uuidv4();
-    let onTime = Date.parse(this.time);
-    onTime = onTime - (onTime % (60 * 1000))
+    let onTime = Date.parse(this.time.toString());
+    onTime = onTime - (onTime % (60 * 1000));
+
     // Exception 처리로 count 10번으로 세팅
     let count = this.breakCount == 0 && this.breakTime!=0 && this.timerOff==undefined ?
-      this.breakCount= 10 : this.breakCount;
+      10 : this.breakCount;
+    this.breakCount = count; // 위에 합치기 // 예외 처리로 10 지정해준 거 반영
+
     // 푸시 마감 시간 지정
-    let offTime = this.timerOff != undefined ? Date.parse(this.timerOff) :
-      onTime + ((this.workTime + this.breakTime) * count * 1000 * 60)
-    // Rest count만 입력되었다면 푸시 마감 시간 지정
-    this.timerOff = this.timerOff != undefined ? this.timerOff :
-      new Date(offTime - (offTime % 60 * 1000))
-    // 푸시 시작 시간 지정
-    let time = new Date(onTime - (onTime % 60 * 1000))
-    
+    let offTime = this.timerOff != undefined ? Date.parse(this.timerOff.toString()) :
+      onTime + ((this.workTime + this.breakTime) * count * 1000 * 60);
+
+    // break count만 입력되었다면 푸시 마감 시간 지정
+    this.timerOff = this.timerOff != undefined ? this.timerOff : new Date(offTime);
+    await console.log('1');
     if (this.breakTime) {
       while (onTime < offTime) {
-        time = new Date(onTime)
-        await this.workNotificaiton(uuid, time)
-        onTime += await (this.workTime * 1000 * 60)
+        let time = await new Date(onTime);
+        await this.workNotificaiton(uuid, time);
+
+        onTime += await (this.workTime * 1000 * 60);
         
-        await this.breakNotificaiton(uuid, onTime)
-        onTime += await (this.breakTime * 1000 * 60)
+        await this.breakNotificaiton(uuid, onTime, count);
+        onTime += await (this.breakTime * 1000 * 60);
+        await console.log('onTime 3: ',onTime);
 
         if(await this.breakCount!=0) {
           await count--;
@@ -119,40 +130,38 @@ export class SettingAlarmComponent {
       }
     }
     else {
-      this.workNotificaiton(uuid, time)
+      let time = await new Date(onTime);
+      await this.workNotificaiton(uuid, time)
     }
+    await console.log('Before save on storage:',this.notifications);
     await this.storage.set(uuid, this.notifications)
-    this.modalCtrl.dismiss();
-
     // Push 보내기
-    this.notifications.map(e => {
-      LocalNotifications.schedule({ notifications: [e] });
-      console.log('Alarm create !', e);
+    await this.notifications.map(async (e) => {
+      await LocalNotifications.schedule({ notifications: [e] });
     });
+    await this.modalCtrl.dismiss();
   }
 
-  set(key: string, value: any) {
-    this._storage?.set(key, value);
-  }
-
-  async breakNotificaiton(key:string, time: number) {
+  async breakNotificaiton(key:string, time: number, count:number) {
     var breakNotificationSetting: object = []
-    const breakTime = new Date(time)
-    console.log('breakTime:',breakTime);
+    const timeForBreak = new Date(time)
+    console.log('breakTime:',timeForBreak);
     breakNotificationSetting={
-          title: 'Time for break !',
-          body: `It's time for break`,
-          id: Math.random() * 100000,
+          title: `It's time for a break 😀`,
+          body: `Count for break: ${this.breakCount+1-count}/${this.breakCount}`,
+          id: Math.floor(Math.random() * Math.pow(10,8)),
           schedule: {
-            at: breakTime
+            at: timeForBreak,
           },
-          key: key,
-          timerOff: this.timerOff, // console.log()
-          workTime: this.workTime,
-          breakTime: this.breakTime,
-          breakCount: this.breakCount,
+          extra: {
+            key: key,
+            timerOff: new Date(this.timerOff),
+            workTime: this.workTime,
+            breakTime: this.breakTime,
+            breakCount: this.breakCount,
+          }
         }
-    this.notifications.push(breakNotificationSetting);
+    return await this.notifications.push(breakNotificationSetting);
   }
 
   // For slides
