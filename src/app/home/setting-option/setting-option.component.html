@@ -9,6 +9,18 @@
   </ion-toolbar>
 </ion-header>
 
+<div>
+  <ion-item color="medium">
+    <ion-label>Select Theme</ion-label>
+  </ion-item>
+
+  <ion-select color="light" class="selectTheme" [interfaceOptions]="customPopoverOptions" interface="popover"
+    [(ngModel)]="selectTheme" (ionChange)="dynamicTheme()">
+    <ion-select-option [value]="theme.class" *ngFor="let theme of themeColor;let i = indexs">
+      {{theme.name}}
+    </ion-select-option>
+  </ion-select>
+</div>
 
 <br />
 <ion-button color="warning" (click)="changeReorderToggle()">

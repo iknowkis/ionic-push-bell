@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { ModalController } from '@ionic/angular';
-import { HomePage } from '../home.page';
 import { Storage } from '@ionic/storage';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-setting-option',
@@ -16,7 +16,23 @@ export class SettingOptionComponent{
   constructor(
     private modalCtrl: ModalController,
     private storage: Storage,
-    ) { }
+    private theme: ThemeService,
+    ) {
+      this.selectTheme = 'default';
+     }
+     dynamicTheme() {
+      this.theme.activeTheme(this.selectTheme);
+    }
+
+  public themeColor = [
+    { name: 'Default', class: 'default' },
+    { name: 'Dark', class: 'dark-theme' },
+  ];
+  public selectTheme;
+
+
+
+
 
    changeReorderToggle() {
     console.log('in modal: ', !this._reorderToggle);

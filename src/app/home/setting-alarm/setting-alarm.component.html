@@ -43,25 +43,24 @@
 
         <ion-item>
           <ion-label position="floating">Weekday</ion-label>
-          <ion-select class="ion-text-end" style="font-size: 14px" multiple="true" [(ngModel)]='weekday'>
+          <ion-select class="ion-text-end" style="font-size: 14px" multiple="true" [(ngModel)]="weekday">
             <ion-select-option *ngFor="let day of weekdays; let i=index" value={{i}}>
               {{day}}
-            </ion-select-option>
+            </ion-select-option> <!-- 수정 시 요일이 나오게-->
           </ion-select>
         </ion-item>
         <ion-item-divider></ion-item-divider>
-
-        <!-- 편집할 때만 보이도록 수정할 것 [(ngModel)]='weekday'-->
-        <ion-item>
+        
+        <ion-item> <!-- 수정 시 반영되도록-->
           <ion-label>Deactivate</ion-label>
-          <ion-select value='null' interface="action-sheet">
-            <ion-select-option value='id.weekday'>Enable</ion-select-option>
-            <ion-select-option value='null'>Disable</ion-select-option>
+          <ion-select interface="action-sheet" [(ngModel)]="deactivateValue">
+            <ion-select-option *ngFor="let value of booleanArray" [value]="value">
+              {{value.name}}
+            </ion-select-option>
           </ion-select>
         </ion-item>
-       </ion-list>
-    </ion-slide>
-
+        </ion-list>
+        </ion-slide>
 
 
 

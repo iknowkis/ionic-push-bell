@@ -22,7 +22,6 @@ export class HomePage implements OnInit {
     private storage: Storage,
   ) { }
 
-//this.reorderToggle = this.settingOption.offerReorderToggle() 
   async openSettingAlarmModal() {
     const modal = await this.modalController.create({
       component: SettingAlarmComponent,
@@ -33,47 +32,52 @@ export class HomePage implements OnInit {
     return await modal.present();
   }
 
-  // async edit() {
-  //   const modal = await this.modalController.create({
-  //     component: SettingBreakTimerComponent,
-  //     componentProps: {
-  //       title: this.storageData[0].title,
-  //       content: this.storageData[0].content,
-  //     },
-  //   });
-  //   return await modal.present();
-  // }
-  
   async editSettingAlarmModal() {
+    // const modal = await this.modalController.create({
+    //   component: SettingBreakTimerComponent,
+    // });
+    // return await modal.present();
+    let arr=[]
+    this.storageData[0].map((e:any)=>arr.push(e.schedule.on.weekday))
+    console.log('AAA',arr)
+
     const modal = await this.modalController.create({
-      component: SettingBreakTimerComponent,
+      component: SettingAlarmComponent,
+      componentProps: {
+        title: this.storageData[0][0].title,
+        content: this.storageData[0][0].body,
+        time: this.storageData[0][0].schedule.at.toString(),
+        weekday: arr,
+      },
+    });
+    modal.onDidDismiss().then(async () => {
+      this.viewStorageData();
     });
     return await modal.present();
   }
 
   async editSettingOption() {
     const modal = await this.modalController.create({
-      componentProps:{
-        _reorderToggle:this.reorderToggle,
+      componentProps: {
+        _reorderToggle: this.reorderToggle,
       },
       component: SettingOptionComponent,
     });
     modal.present();
     modal.onDidDismiss().then(async (detail: OverlayEventDetail) => {
       this.reorderToggle = detail.data;
-      console.log(this.reorderToggle);
       this.viewStorageData();
     });
   }
 
   async ngOnInit() {
-    this.viewStorageData();
-    LocalNotifications.requestPermissions();
-    // await LocalNotifications.addListener('localNotificationReceived', async (notification) => {
-    //   await console.log('notification received!!', notification);
-    // });
-    console.log('reorderToggle value:',this.reorderToggle);
+    await this.viewStorageData();
+    await LocalNotifications.requestPermissions();
+    await LocalNotifications.addListener('localNotificationReceived', async (notification) => {
+      await console.log('notification received!!', notification);
+    })
   }
+
   async viewStorageData() {
     this.storageData = []
     const storage = await this.storage.create();
@@ -125,9 +129,5 @@ export class HomePage implements OnInit {
   // For reorder
   onItemReorder({ detail }: any) {
     detail.complete(true);
-  }
-  
-  button() {
-    console.log('RRRRRRRR:',this.reorderToggle);
   }
 }

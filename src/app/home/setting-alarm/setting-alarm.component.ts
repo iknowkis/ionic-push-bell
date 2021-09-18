@@ -21,7 +21,10 @@ export class SettingAlarmComponent {
   workTime = 0;
   breakTime = 0;
   breakCount = 0;
-  repeatValue: boolean;
+  deactivateArray = [
+    {name: 'Enable', value:true},
+    {name: 'Disable', value:false}];
+  deactivateValue = this.deactivateArray[1]; // 기본값 
 
   private _storage: Storage | null = null;
 
@@ -52,8 +55,7 @@ export class SettingAlarmComponent {
               minute: time.getMinutes(),
               second: 0,
             },
-            // at: time,
-            // repeats: this.repeatValue = new Date(Date.now()) == time ? true: false,
+            at: time,
           },
           extra: {
             key: key,
@@ -78,7 +80,7 @@ export class SettingAlarmComponent {
             minute: time.getMinutes(),
             second: 0,
           },
-          // at: time
+          at: time
         },
         sound: "beep.wav",
         extra: {
@@ -138,9 +140,11 @@ export class SettingAlarmComponent {
     await console.log('Before save on storage:',this.notifications);
     await this.storage.set(uuid, this.notifications)
     // Push 보내기
+    if(this.deactivateValue.value==false) {
     await this.notifications.map(async (e) => {
       await LocalNotifications.schedule({ notifications: [e] });
     });
+  }
     await this.modalCtrl.dismiss();
   }
 
