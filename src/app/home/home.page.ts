@@ -31,30 +31,43 @@ export class HomePage implements OnInit {
     });
     return await modal.present();
   }
+  
+  deactivatedIonCard(dataList) {
+    return dataList[0].extra.deactivateValue.value == false ? 'deactivatedIonCard' : '';
+  }
 
-  async editSettingAlarmModal() {
+  async editAlarmModal(key) {
     // const modal = await this.modalController.create({
     //   component: SettingBreakTimerComponent,
     // });
     // return await modal.present();
-    let arr=[]
-    this.storageData[0].map((e:any)=>arr.push(e.schedule.on.weekday))
-    console.log('AAA',arr)
+    await this.storage.get(key).then(async dataList => {
+    const data = dataList[0]
 
+    let arr=[];
+    dataList.map((e:any)=>arr.push(e.schedule.on.weekday));
+    
     const modal = await this.modalController.create({
       component: SettingAlarmComponent,
       componentProps: {
-        title: this.storageData[0][0].title,
-        content: this.storageData[0][0].body,
-        time: this.storageData[0][0].schedule.at.toString(),
-        weekday: arr,
+        title: data.title,
+        content: data.body,
+        keyForEdit: key,
+        time: new Date(Date.parse(data.extra.time)).toISOString(),
+        weekday: new Set(arr),
+        statusValue: data.extra.deactivateValue,
+        timerOff: new Date(Date.parse(data.extra.timerOff)).toISOString(),
+        workTime: data.extra.workTime,
+        breakTime: data.extra.breakTime,
+        breakCount: data.extra.breakCount,
       },
     });
     modal.onDidDismiss().then(async () => {
       this.viewStorageData();
     });
     return await modal.present();
-  }
+  })
+}
 
   async editSettingOption() {
     const modal = await this.modalController.create({

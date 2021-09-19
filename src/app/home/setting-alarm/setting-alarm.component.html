@@ -34,27 +34,28 @@
           placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
-
+        
         <ion-item>
           <ion-label>Timer on</ion-label>
           <ion-datetime display-format="h:mm A" placeholder="_" picker-format="h:mm A" [(ngModel)]="time">
           </ion-datetime>
         </ion-item>
-
+        
         <ion-item>
           <ion-label position="floating">Weekday</ion-label>
-          <ion-select class="ion-text-end" style="font-size: 14px" multiple="true" [(ngModel)]="weekday">
+          <ion-select class="ion-text-end" style="font-size: 14px" multiple="true"
+          placeholder={{weekdayPlaceholder.toString()}} [(ngModel)]="weekday">
             <ion-select-option *ngFor="let day of weekdays; let i=index" value={{i}}>
               {{day}}
-            </ion-select-option> <!-- 수정 시 요일이 나오게-->
+            </ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item-divider></ion-item-divider>
         
-        <ion-item> <!-- 수정 시 반영되도록-->
-          <ion-label>Deactivate</ion-label>
-          <ion-select interface="action-sheet" [(ngModel)]="deactivateValue">
-            <ion-select-option *ngFor="let value of booleanArray" [value]="value">
+        <ion-item>
+          <ion-label>Status</ion-label>
+          <ion-select interface="action-sheet" placeholder={{statusValue.name}} [(ngModel)]="statusValue">
+            <ion-select-option *ngFor="let value of statusArray" [value]="value">
               {{value.name}}
             </ion-select-option>
           </ion-select>

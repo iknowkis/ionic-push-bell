@@ -18,7 +18,7 @@
 
 <ion-content [fullscreen]="true">
   <ion-reorder-group (ionItemReorder)="onItemReorder($event)" [disabled]="reorderToggle">
-    <ion-card *ngFor="let dataList of storageData">
+    <ion-card *ngFor="let dataList of storageData" class={{deactivatedIonCard(dataList)}}>
       <ion-reorder>
         <ion-item>
           <ion-icon *ngIf="dataList[0].extra.workTime == 0" name="alarm-outline"
@@ -27,14 +27,15 @@
               slot="start"></ion-icon>
           <ion-label>{{dataList[0].title}}</ion-label>
 
-          <ion-button fill="outline" slot="end" (click)="editSettingAlarmModal()">Edit
+          <ion-button fill="outline" slot="end"
+              (click)="editAlarmModal(dataList[0].extra.key)">Edit
           </ion-button>
           <ion-button fill="outline" color="danger" slot="end"
               (click)="removeAlarm(dataList[0].extra.key)">Del
           </ion-button>
         </ion-item>
 
-          <ion-card-content style="padding-bottom: 0.6rem;">
+          <ion-card-content style="padding-bottom: 0.6rem; font-size: medium">
           <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute
             < 10 ? '0' : ''}}{{dataList[0].schedule.on.minute}}
           </b>
@@ -42,8 +43,11 @@
           <b *ngIf="dataList[0].extra.breakTime">
             - {{dataList[0].extra.timerOff.getHours()}}:{{dataList[0].extra.timerOff.getMinutes()
             < 10 ? '0' : ''}}{{dataList[0].extra.timerOff.getMinutes()}}
-            <br/>
           </b>
+
+          <ion-chip *ngIf="dataList[0].extra.deactivateValue.value == false" color="danger">
+            <b>Deactivated</b>
+          </ion-chip>
         </ion-card-content>
 
         <ion-card-content style="padding-top:0px; padding-right:2px">
@@ -52,7 +56,7 @@
           </div>
 
           <ion-col *ngFor="let data of dataList">
-            <ion-chip *ngIf="dataList[0].extra.workTime == 0" color="dark">
+            <ion-chip *ngIf="data.extra.workTime == 0" color="dark">
               {{weekdays[data.schedule.on.weekday].slice(0,3).toUpperCase()}}
             </ion-chip>
           </ion-col>
@@ -82,6 +86,6 @@
   </ion-card>
 </ion-content>
 
-<ion-button color="warning" (click)="getPending()">Pending</ion-button>
+<!-- <ion-button color="warning" (click)="getPending()">Pending</ion-button>
 <ion-button color="danger" (click)="clear()">Clear</ion-button>
-<ion-button color="primary" (click)="viewStorageData()">Refresh</ion-button>
+<ion-button color="primary" (click)="viewStorageData()">Refresh</ion-button> -->
