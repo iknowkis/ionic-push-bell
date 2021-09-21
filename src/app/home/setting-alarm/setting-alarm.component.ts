@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { IonSlides, ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
+import { TranslateService } from '@ngx-translate/core';
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({
@@ -10,6 +11,8 @@ import { v4 as uuidv4 } from 'uuid';
   styleUrls: ['./setting-alarm.component.scss'],
 })
 export class SettingAlarmComponent {
+  toolbarColor = 'warning'
+  headerTitle = 'Add push'
   title: string = null
   titlePlaceholder: string = `Setting at ${new Date().getMonth()}/${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes() < 10 ? '0'+new Date().getMinutes():new Date().getMinutes()}`;
   content: string = null
@@ -27,7 +30,8 @@ export class SettingAlarmComponent {
     {name: 'Activate', value: true},
     {name: 'Deactivate', value: false}
   ]
-  statusValue = this.statusArray[0]; // 기본값 
+  // Default statusValue is 'true'
+  statusValue = this.statusArray[0];
   keyForEdit = ''
 
   private _storage: Storage | null = null;
@@ -50,11 +54,12 @@ export class SettingAlarmComponent {
     this.breakCount = count; // 위에 합치기 // 예외 처리로 10 지정해준 거 반영
 
     // 푸시 마감 시간 지정
-    let offTime = this.timerOff != undefined ? Date.parse(this.timerOff.toString()) :
+    let offTime = count==0 ? Date.parse(this.timerOff?.toString()) :
       onTime + ((this.workTime + this.breakTime) * count * 1000 * 60);
 
     // break count만 입력되었다면 푸시 마감 시간 지정
-    this.timerOff = this.timerOff != undefined ? this.timerOff : new Date(offTime);
+    // ****** timerOff 실시간 반영되도록 수정해야 함 ********
+    this.timerOff = count==0 ? this.timerOff : new Date(offTime);
     if (this.breakTime) {
       while (onTime < offTime) {
         await this.workNotificaiton(uuid, new Date(onTime));
@@ -75,7 +80,7 @@ export class SettingAlarmComponent {
       await this.workNotificaiton(uuid, new Date(onTime))
     }
     // 편집 시 기존 데이터 삭제
-    this.removeAlarm(this.keyForEdit)
+    this?.removeAlarm(this.keyForEdit)
     // DB 저장
     await console.log('Before save on storage:', this.notifications);
     await this.storage.set(uuid, this.notifications)

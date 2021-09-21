@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { SettingOptionComponent } from './setting-option.component';
 import { HomePage } from '../home.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -11,6 +12,7 @@ import { HomePage } from '../home.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    TranslateModule,
   ],
   declarations: [
     SettingOptionComponent

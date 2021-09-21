@@ -7,9 +7,13 @@ import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 import { SettingAlarmModule } from './setting-alarm/setting-alarm.module';
 import { SettingOptionModule } from './setting-option/setting-option.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
+  declarations: [
+    HomePage
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -17,9 +21,7 @@ import { SettingOptionModule } from './setting-option/setting-option.module';
     HomePageRoutingModule,
     SettingAlarmModule,
     SettingOptionModule,
-  ],
-  declarations: [
-    HomePage
+    TranslateModule,
   ],
 })
 export class HomePageModule {}

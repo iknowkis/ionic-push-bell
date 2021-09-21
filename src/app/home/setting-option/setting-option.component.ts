@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
+import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
@@ -9,38 +10,50 @@ import { ThemeService } from 'src/app/services/theme/theme.service';
   templateUrl: './setting-option.component.html',
   styleUrls: ['./setting-option.component.scss'],
 })
-export class SettingOptionComponent{
+export class SettingOptionComponent {
 
   public _reorderToggle: boolean;
-
-  constructor(
+  public _selectedTheme: String;
+  public _selectedLanguage: String;
+  
+  constructor (
     private modalCtrl: ModalController,
     private storage: Storage,
     private theme: ThemeService,
-    ) {
-      this.selectTheme = 'default';
-     }
-     dynamicTheme() {
-      this.theme.activeTheme(this.selectTheme);
+    public translate: TranslateService,
+    public alrCtrl: AlertController
+  ) {
     }
 
-  public themeColor = [
-    { name: 'Default', class: 'default' },
-    { name: 'Dark', class: 'dark-theme' },
-  ];
-  public selectTheme;
+  async dynamicTheme() {
+    await this.theme.activeTheme(this._selectedTheme);
+    await this.storage.remove('themeValue');
+    await this.storage.set('themeValue', this._selectedTheme)
+  }
 
+  async deleteAlert() {
+    const alert = await this.alrCtrl.create({
+      header: 'Clear all notifications',
+      message: 'Do you really want to clear all notifications?',
+      buttons: [
+        { text: 'Agree',
+        handler: () => this.clear()
+        },
+        { text: 'Disagree',
+          role: 'cancel',
+        }
+      ]
+    });
+    await alert.present();
+  }
 
-
-
-
-   changeReorderToggle() {
-    console.log('in modal: ', !this._reorderToggle);
-    this.modalCtrl.dismiss(!this._reorderToggle);
-   }
-
-  dismissModal() {
-    this.modalCtrl.dismiss(this._reorderToggle);
+  async dismissModal() {
+    await this.storage.remove('languageValue');
+    await this.storage.set('languageValue', this._selectedLanguage)
+    await this.modalCtrl.dismiss(this._reorderToggle);
+  }
+  
+  ionViewDidEnter() {
   }
 
   async getPending() {
@@ -51,11 +64,11 @@ export class SettingOptionComponent{
 
   async clear() {
     await LocalNotifications.getPending().then(list => {
-          console.log('getPending():',list);
-          if (!list.notifications.length) return;
-          const notifications = list.notifications.map(li => { return { id: li.id }; });
-          return LocalNotifications.cancel({ notifications })
-        });
+      console.log('getPending():', list);
+      if (!list.notifications.length) return;
+      const notifications = list.notifications.map(li => { return { id: li.id }; });
+      return LocalNotifications.cancel({ notifications })
+    });
     await LocalNotifications.removeAllListeners();
     await await this.storage.clear();
     this.dismissModal();

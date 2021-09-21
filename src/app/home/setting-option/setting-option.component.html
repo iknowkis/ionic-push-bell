@@ -1,41 +1,82 @@
 <ion-header>
   <ion-toolbar color="danger">
-    <ion-title class="ion-text-center">Setting Option</ion-title>
+    <ion-title class="ion-text-center">{{'Setting-option' | translate}}</ion-title>
     <ion-buttons slot="start">
       <ion-button (click)="dismissModal()">
-        Cancel
+        {{'Close' | translate}}
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<div>
-  <ion-item color="medium">
-    <ion-label>Select Theme</ion-label>
-  </ion-item>
+<ion-content>
+  <ion-card>
+    <ion-item>
+      <ion-label>
+        <ion-icon name="color-palette-outline">
+        </ion-icon>
+        {{'Select Theme' | translate}}
+      </ion-label>
+    </ion-item>
+    <ion-item color="light">
+      <ion-select slot="end" [(ngModel)]="_selectedTheme" (ionChange)="dynamicTheme()">
+        <ion-select-option value="default">{{'Light' | translate}}</ion-select-option>
+        <ion-select-option value="dark-theme">{{'Dark' | translate}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-card>
 
-  <ion-select color="light" class="selectTheme" [interfaceOptions]="customPopoverOptions" interface="popover"
-    [(ngModel)]="selectTheme" (ionChange)="dynamicTheme()">
-    <ion-select-option [value]="theme.class" *ngFor="let theme of themeColor;let i = indexs">
-      {{theme.name}}
-    </ion-select-option>
-  </ion-select>
-</div>
+  <ion-card>
+    <ion-item>
+      <ion-label>
+        <ion-icon name="happy-outline">
+        </ion-icon>
+        {{'Translate Language' | translate}}
+      </ion-label>
+    </ion-item>
+    <ion-item color="light">
+      <ion-select #langSelect [(ngModel)]="this._selectedLanguage"
+        (ionChange)="translate.use(langSelect.value)" slot="end">
+        <ion-select-option *ngFor="let lang of translate.getLangs()" [value]="lang" [translate]="lang">
+          {{ lang | translate}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-card>
 
-<br />
-<ion-button color="warning" (click)="changeReorderToggle()">
-  Sotable<ion-icon name="swap-vertical-outline"></ion-icon>
-</ion-button>
-<br />
+  <ion-card>
+    <ion-item>
+      <ion-label>
+      <ion-icon name="swap-vertical-outline">
+      </ion-icon>
+      {{'Drag and Drop' | translate}}
+    </ion-label>
+    </ion-item>
+    <ion-item color="light" >
+    <ion-text slot="end">
+      {{this._reorderToggle.toString() | translate}}
+    </ion-text>
+      <ion-toggle color="dark" slot="end" [(ngModel)]="this._reorderToggle" default>
+      </ion-toggle>
+    </ion-item>
+  </ion-card>
 
-<br />
+  <ion-card>
+    <ion-item>
+      <ion-label>
+      <ion-icon name="close-circle-outline">
+      </ion-icon>
+      {{'Clear all notifications' | translate}}
+    </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="trash-outline" slot="end" color="danger" (click)="deleteAlert()">
+      </ion-icon>
+    </ion-item>
+  </ion-card>
+</ion-content>
+
+
 <ion-button (click)="getPending()">
-  pending
+    pending
 </ion-button>
-<br />
-
-<br />
-<ion-button color="danger" (click)="clear()">
-  clear
-</ion-button>
-<br />

@@ -1,14 +1,14 @@
 <ion-header>
-  <ion-toolbar color="warning">
-    <ion-title class="ion-text-center">Setting Push</ion-title>
+  <ion-toolbar color={{toolbarColor}}>
+    <ion-title class="ion-text-center">{{headerTitle | translate}}</ion-title>
     <ion-buttons slot="start">
       <ion-button (click)="dismissModal()">
-        Cancel
+        {{'Cancel' | translate}}
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button (click)="saveAndDismissModal()">
-        Save
+        {{'Save' | translate}}
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -22,41 +22,41 @@
           <ion-icon name="alarm-outline"></ion-icon>
         </h1>
         <ion-item>
-          <ion-label>Title</ion-label>
+          <ion-label>{{'Title' | translate}}</ion-label>
           <ion-input class="ion-text-end" type="text" [(ngModel)]="title"
           placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label>Content</ion-label>
+          <ion-label>{{'Content' | translate}}</ion-label>
           <ion-input class="ion-text-end" type="text" [(ngModel)]="content"
           placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
         
         <ion-item>
-          <ion-label>Timer on</ion-label>
+          <ion-label>{{'Timer on' | translate}}</ion-label>
           <ion-datetime display-format="h:mm A" placeholder="_" picker-format="h:mm A" [(ngModel)]="time">
           </ion-datetime>
         </ion-item>
         
         <ion-item>
-          <ion-label position="floating">Weekday</ion-label>
+          <ion-label position="floating">{{'Weekday' | translate}}</ion-label>
           <ion-select class="ion-text-end" style="font-size: 14px" multiple="true"
           placeholder={{weekdayPlaceholder.toString()}} [(ngModel)]="weekday">
             <ion-select-option *ngFor="let day of weekdays; let i=index" value={{i}}>
-              {{day}}
+              {{day | translate}}
             </ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item-divider></ion-item-divider>
         
         <ion-item>
-          <ion-label>Status</ion-label>
+          <ion-label>{{'Status' | translate}}</ion-label>
           <ion-select interface="action-sheet" placeholder={{statusValue.name}} [(ngModel)]="statusValue">
             <ion-select-option *ngFor="let value of statusArray" [value]="value">
-              {{value.name}}
+              {{value.name | translate}}
             </ion-select-option>
           </ion-select>
         </ion-item>
@@ -73,26 +73,26 @@
           <ion-icon name="timer-outline"></ion-icon>
         </h1>
         <ion-item>
-          <ion-label>Title</ion-label>
+          <ion-label>{{'Title' | translate}}</ion-label>
           <ion-input class="ion-text-end" type="text" [(ngModel)]="title"
           placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label>Content</ion-label>
+          <ion-label>{{'Content' | translate}}</ion-label>
           <ion-input class="ion-text-end" type="text" [(ngModel)]="content"
           placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label>Timer on</ion-label>
+          <ion-label>{{'Timer on' | translate}}</ion-label>
           <ion-datetime display-format="h:mm A" placeholder="_" picker-format="h:mm A" [(ngModel)]="time">
           </ion-datetime>
         </ion-item>
         <ion-item>
-          <ion-label>Work time</ion-label>
+          <ion-label>{{'Work time' | translate}}</ion-label>
           <ion-input class="ion-text-center" type="number" [(ngModel)]="workTime">
           </ion-input>
           <ion-range min="0" max="60" step="5" snaps="true" color="primary" [(ngModel)]="workTime"
@@ -102,7 +102,7 @@
 
         
         <ion-item>
-          <ion-label>Break time</ion-label>
+          <ion-label>{{'Break time' | translate}}</ion-label>
           <ion-input class="ion-text-center" type="number" [(ngModel)]="breakTime">
           </ion-input>
           <ion-range min="0" max="60" step="5" snaps="true" color="danger" [(ngModel)]="breakTime"
@@ -113,7 +113,7 @@
         <ion-item-divider></ion-item-divider>
 
         <ion-item>
-          <ion-label>Count for Break</ion-label>
+          <ion-label>{{'Count for Break' | translate}}</ion-label>
           <ion-input class="ion-text-center" type="number" [(ngModel)]="breakCount">
           </ion-input>
           <ion-range min="0" max="10" step="1" snaps="true" color="danger" [(ngModel)]="breakCount"
@@ -122,9 +122,20 @@
         </ion-item>
 
         <ion-item>
-          <ion-label>Timer off</ion-label>
-          <ion-datetime display-format="h:mm A" placeholder="option" picker-format="h:mm A" [(ngModel)]="timerOff">
+          <ion-label>{{'Timer off' | translate}}</ion-label>
+          <ion-datetime display-format="h:mm A" placeholder="{{'Option' | translate}}" picker-format="h:mm A" [(ngModel)]="timerOff">
           </ion-datetime>
+        </ion-item>
+
+        <ion-item-divider></ion-item-divider>
+
+        <ion-item>
+          <ion-label>{{'Status' | translate}}</ion-label>
+          <ion-select interface="action-sheet" placeholder={{statusValue.name}} [(ngModel)]="statusValue">
+            <ion-select-option *ngFor="let value of statusArray" [value]="value">
+              {{value.name | translate}}
+            </ion-select-option>
+          </ion-select>
         </ion-item>
       </ion-list>
     </ion-slide>

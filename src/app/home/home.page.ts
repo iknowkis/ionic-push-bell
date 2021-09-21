@@ -6,6 +6,8 @@ import { Storage } from '@ionic/storage';
 import { SettingBreakTimerComponent } from './setting-break-timer/setting-break-timer.component';
 import { SettingOptionComponent } from './setting-option/setting-option.component';
 import { OverlayEventDetail } from '@ionic/core';
+import { ThemeService } from '../services/theme/theme.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
@@ -13,14 +15,19 @@ import { OverlayEventDetail } from '@ionic/core';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  storageData:Array<Array<LocalNotificationSchema>> = []
-  weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  reorderToggle = true;
+  public storageData:Array<Array<LocalNotificationSchema>> = []
+  public weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  public reorderToggle = true;
+  public selectedTheme: String;
+  public selectedLanguage: String;
 
   constructor(
     public modalController: ModalController,
     private storage: Storage,
-  ) { }
+    private theme: ThemeService,
+    public translate: TranslateService,
+  ) {
+  }
 
   async openSettingAlarmModal() {
     const modal = await this.modalController.create({
@@ -50,13 +57,15 @@ export class HomePage implements OnInit {
     const modal = await this.modalController.create({
       component: SettingAlarmComponent,
       componentProps: {
+        toolbarColor: 'primary',
+        headerTitle: 'Edit push',
         title: data.title,
         content: data.body,
         keyForEdit: key,
         time: new Date(Date.parse(data.extra.time)).toISOString(),
         weekday: new Set(arr),
         statusValue: data.extra.deactivateValue,
-        timerOff: new Date(Date.parse(data.extra.timerOff)).toISOString(),
+        timerOff: data.extra.timerOff!='Invalid Date' ? new Date(Date.parse(data.extra.timerOff)).toISOString():0,
         workTime: data.extra.workTime,
         breakTime: data.extra.breakTime,
         breakCount: data.extra.breakCount,
@@ -71,10 +80,12 @@ export class HomePage implements OnInit {
 
   async editSettingOption() {
     const modal = await this.modalController.create({
+      component: SettingOptionComponent,
       componentProps: {
         _reorderToggle: this.reorderToggle,
-      },
-      component: SettingOptionComponent,
+        _selectedTheme: this.selectedTheme,
+        _selectedLanguage: this.selectedLanguage,
+      }
     });
     modal.present();
     modal.onDidDismiss().then(async (detail: OverlayEventDetail) => {
@@ -90,14 +101,37 @@ export class HomePage implements OnInit {
       await console.log('notification received!!', notification);
     })
   }
-
+  
   async viewStorageData() {
     this.storageData = []
     const storage = await this.storage.create();
+    //To apply theme
+    await this.storage.get('themeValue').then(async data => {
+      this.selectedTheme = data == undefined ? 'default' : data;
+      });
+    await this.theme.activeTheme(this.selectedTheme);
+    await this.storage.remove('themeValue');
+    //To translate language
+    await this.storage.get('languageValue').then(async data => {
+      this.selectedLanguage = data == undefined ? 'en' : data;
+      });
+    await this.translate.addLangs(['en', 'kr']);
+    await this.translate.setDefaultLang(this.selectedLanguage as string);
+    await this.storage.remove('languageValue');
+
     await storage.forEach((value) => {
       this.storageData.push(value);
     })
-    this.storageData.sort((firstEl:any, nextEl:any) => firstEl[0].schedule.at - nextEl[0].schedule.at)
+    this.storageData.sort((firstEl:any, nextEl:any) =>
+    (firstEl[0].schedule.on.hour - nextEl[0].schedule.on.hour) ||
+    (firstEl[0].schedule.on.minute - nextEl[0].schedule.on.minute))
+    
+    await this.storage.set('themeValue', this.selectedTheme)
+    await this.storage.set('languageValue', this.selectedLanguage)
+  }
+  
+  getWeekday(data) {
+    return this.weekdays[data.schedule.on.weekday].slice(0,3).toUpperCase()
   }
 
   async removeAlarm(key) {
@@ -109,17 +143,6 @@ export class HomePage implements OnInit {
     await this.storage.remove(key);
     this.viewStorageData();
   }
-
-  // async removeAlarm1(key) {
-  //   await this.storage.get(key).then(async list => {
-  //     list.map(async e=> {
-  //     const cancelOptions = { notifications: e };
-  //     await LocalNotifications.cancel(cancelOptions);
-  //     })
-  //     await this.storage.remove(key);
-  //   });
-  //   await this.viewStorageData();
-  // }
 
   async clear() {
     await LocalNotifications.getPending().then(list => {

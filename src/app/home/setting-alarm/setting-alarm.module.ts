@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { SettingAlarmComponent } from './setting-alarm.component';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -10,6 +11,7 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     FormsModule,
     IonicModule,
+    TranslateModule,
   ],
   declarations: [SettingAlarmComponent]
 })
