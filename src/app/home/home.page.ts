@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class HomePage implements OnInit {
   public storageData:Array<Array<LocalNotificationSchema>> = []
   public weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-  public reorderToggle = true;
+  public reorderToggle = false;
   public selectedTheme: String;
   public selectedLanguage: String;
 
@@ -97,8 +97,11 @@ export class HomePage implements OnInit {
   async ngOnInit() {
     await this.viewStorageData();
     await LocalNotifications.requestPermissions();
-    await LocalNotifications.addListener('localNotificationReceived', async (notification) => {
-      await console.log('notification received!!', notification);
+    let pending = await LocalNotifications.getPending();
+    console.log('pending', pending);
+    await LocalNotifications.addListener('localNotificationReceived', (notification) => {
+      console.log('notification received!!', notification);
+
     })
   }
   
@@ -118,11 +121,12 @@ export class HomePage implements OnInit {
     await this.translate.addLangs(['en', 'kr']);
     await this.translate.setDefaultLang(this.selectedLanguage as string);
     await this.storage.remove('languageValue');
-
+    //To get storageData
     await storage.forEach((value) => {
       this.storageData.push(value);
     })
     this.storageData.sort((firstEl:any, nextEl:any) =>
+    (nextEl[0].extra.deactivateValue.value -firstEl[0].extra.deactivateValue.value) ||
     (firstEl[0].schedule.on.hour - nextEl[0].schedule.on.hour) ||
     (firstEl[0].schedule.on.minute - nextEl[0].schedule.on.minute))
     
@@ -142,24 +146,6 @@ export class HomePage implements OnInit {
     });
     await this.storage.remove(key);
     this.viewStorageData();
-  }
-
-  async clear() {
-    await LocalNotifications.getPending().then(list => {
-          console.log('getPending():',list);
-          if (!list.notifications.length) return;
-          const notifications = list.notifications.map(li => { return { id: li.id }; });
-          return LocalNotifications.cancel({ notifications })
-        });
-    await LocalNotifications.removeAllListeners();
-    await await this.storage.clear();
-    this.viewStorageData();
-  }
-
-  // 삭제 예정
-  async getPending() {
-    let pending = await LocalNotifications.getPending();
-    console.log('pending', pending);
   }
 
   // For reorder

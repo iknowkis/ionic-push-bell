@@ -33,13 +33,13 @@ export class SettingOptionComponent {
 
   async deleteAlert() {
     const alert = await this.alrCtrl.create({
-      header: 'Clear all notifications',
-      message: 'Do you really want to clear all notifications?',
+      header: this.translate.instant('Clear all notifications'),
+      message: this.translate.instant('Do you really want to clear all notifications?'),
       buttons: [
-        { text: 'Agree',
+        { text: this.translate.instant('Agree'),
         handler: () => this.clear()
         },
-        { text: 'Disagree',
+        { text: this.translate.instant('Disagree'),
           role: 'cancel',
         }
       ]

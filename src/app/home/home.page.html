@@ -17,7 +17,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-reorder-group (ionItemReorder)="onItemReorder($event)" [disabled]="reorderToggle">
+  <ion-reorder-group (ionItemReorder)="onItemReorder($event)" [disabled]="!reorderToggle">
     <ion-card *ngFor="let dataList of storageData" class={{deactivatedIonCard(dataList)}}>
       <ion-reorder>
         <ion-item>
@@ -40,7 +40,7 @@
             < 10 ? '0' : ''}}{{dataList[0].schedule.on.minute}}
           </b>
 
-          <b *ngIf="dataList[0].extra.breakTime">
+          <b *ngIf="dataList[0].extra.workTime">
             - {{dataList[0].extra.timerOff.getHours()}}:{{dataList[0].extra.timerOff.getMinutes()
             < 10 ? '0' : ''}}{{dataList[0].extra.timerOff.getMinutes()}}
           </b>
@@ -56,21 +56,21 @@
           </div>
 
           <ion-col *ngFor="let data of dataList">
-            <ion-chip *ngIf="data.extra.workTime == 0" color="dark">
+            <ion-chip *ngIf="data.extra.workTime == 0" outline color="medium">
               {{getWeekday(data) | translate}}
             </ion-chip>
           </ion-col>
           
           <ion-chip *ngIf="dataList[0].extra.workTime" outline color="primary">
-            Work: {{dataList[0].extra.workTime}}m
+            {{'Work' | translate}}: {{dataList[0].extra.workTime}}m
           </ion-chip>
 
           <ion-chip *ngIf="dataList[0].extra.breakTime" outline color="danger">
-            Break: {{dataList[0].extra.breakTime}}m
+            {{'Break' | translate}}: {{dataList[0].extra.breakTime}}m
           </ion-chip>
 
           <ion-chip *ngIf="dataList[0].extra.breakCount" outline color="danger">
-            Count: {{dataList[0].extra.breakCount}}
+            {{'Count' | translate}}: {{dataList[0].extra.breakCount}}
           </ion-chip>
         </ion-card-content>
       </ion-reorder>
@@ -85,7 +85,3 @@
     </ion-slide>
   </ion-card>
 </ion-content>
-
-<!-- <ion-button color="warning" (click)="getPending()">Pending</ion-button>
-<ion-button color="danger" (click)="clear()">Clear</ion-button>
-<ion-button color="primary" (click)="viewStorageData()">Refresh</ion-button> -->

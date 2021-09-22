@@ -16,6 +16,10 @@
     "Count for Break": "Count for Break",
     "Timer off": "Timer off",
     "Option": "Option",
+    "Work": "Work",
+    "Break": "Break",
+    "Count": "Count",
+
     "Cancel": "Cancel",
     "Close": "Close",
     "Save": "Save",
@@ -46,6 +50,12 @@
     "kr": "한글",
     "Drag and Drop": "Drag and Drop",
     "Clear all notifications": "Clear all notifications",
-    "true": "Reorder Off",
-    "false": "Reorder On"
+        "Do you really want to clear all notifications?": "Do you really want to clear all notifications?",
+        "Agree": "Agree",
+        "Disagree": "Disagree",
+    "true": "Reorder On",
+    "false": "Reorder Off",
+
+    "It's time for a break 😀": "It's time for a break 😀",
+    "Count for break": "Count for break"
 }

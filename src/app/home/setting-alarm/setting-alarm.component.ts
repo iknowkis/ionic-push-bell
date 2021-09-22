@@ -14,7 +14,7 @@ export class SettingAlarmComponent {
   toolbarColor = 'warning'
   headerTitle = 'Add push'
   title: string = null
-  titlePlaceholder: string = `Setting at ${new Date().getMonth()}/${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes() < 10 ? '0'+new Date().getMinutes():new Date().getMinutes()}`;
+  titlePlaceholder: string = `${new Date().getMonth()}/${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes() < 10 ? '0'+new Date().getMinutes():new Date().getMinutes()}`;
   content: string = null
   notifications = []
   time: Date;
@@ -39,6 +39,7 @@ export class SettingAlarmComponent {
   constructor(
     private modalCtrl: ModalController,
     private storage: Storage,
+    public translate: TranslateService,
   ) {
     this._storage = this.storage;
   }
@@ -60,7 +61,7 @@ export class SettingAlarmComponent {
     // break count만 입력되었다면 푸시 마감 시간 지정
     // ****** timerOff 실시간 반영되도록 수정해야 함 ********
     this.timerOff = count==0 ? this.timerOff : new Date(offTime);
-    if (this.breakTime) {
+    if (this.workTime) {
       while (onTime < offTime) {
         await this.workNotificaiton(uuid, new Date(onTime));
 
@@ -80,7 +81,7 @@ export class SettingAlarmComponent {
       await this.workNotificaiton(uuid, new Date(onTime))
     }
     // 편집 시 기존 데이터 삭제
-    this?.removeAlarm(this.keyForEdit)
+    if(this.keyForEdit.length > 0) {await this.removeAlarm(this.keyForEdit);}
     // DB 저장
     await console.log('Before save on storage:', this.notifications);
     await this.storage.set(uuid, this.notifications)
@@ -133,7 +134,7 @@ export class SettingAlarmComponent {
     if(this.weekday.length==0) {this.weekday = [timeForBreak.getDay()]}
     this.weekday.forEach(async day => {
     breakNotificationSetting={
-          title: `It's time for a break 😀`,
+          title: this.translate.instant(`It's time for a break 😀`),
           body: `Count for break: ${this.breakCount+1-count}/${this.breakCount}`,
           id: Math.floor(Math.random() * Math.pow(10,8)),
           schedule: {
