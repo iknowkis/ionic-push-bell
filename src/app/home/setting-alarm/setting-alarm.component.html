@@ -23,35 +23,33 @@
         </h1>
         <ion-item>
           <ion-label>{{'Title' | translate}}</ion-label>
-          <ion-input class="ion-text-end" type="text" [(ngModel)]="title"
-          placeholder={{titlePlaceholder}}>
+          <ion-input class="ion-text-end" type="text" [(ngModel)]="title" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label>{{'Content' | translate}}</ion-label>
-          <ion-input class="ion-text-end" type="text" [(ngModel)]="content"
-          placeholder={{titlePlaceholder}}>
+          <ion-input class="ion-text-end" type="text" [(ngModel)]="content" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
-        
+
         <ion-item>
           <ion-label>{{'Timer on' | translate}}</ion-label>
           <ion-datetime display-format="h:mm A" placeholder="_" picker-format="h:mm A" [(ngModel)]="time">
           </ion-datetime>
         </ion-item>
-        
+
         <ion-item>
           <ion-label position="floating">{{'Weekday' | translate}}</ion-label>
           <ion-select class="ion-text-end" style="font-size: 14px" multiple="true"
-          placeholder={{weekdayPlaceholder.toString()}} [(ngModel)]="weekday">
+            placeholder={{weekdayPlaceholder.toString()}} [(ngModel)]="weekday">
             <ion-select-option *ngFor="let day of weekdays; let i=index" value={{i}}>
               {{day | translate}}
             </ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item-divider></ion-item-divider>
-        
+
         <ion-item>
           <ion-label>{{'Status' | translate}}</ion-label>
           <ion-select interface="action-sheet" placeholder={{statusValue.name}} [(ngModel)]="statusValue">
@@ -60,8 +58,8 @@
             </ion-select-option>
           </ion-select>
         </ion-item>
-        </ion-list>
-        </ion-slide>
+      </ion-list>
+    </ion-slide>
 
 
 
@@ -74,15 +72,13 @@
         </h1>
         <ion-item>
           <ion-label>{{'Title' | translate}}</ion-label>
-          <ion-input class="ion-text-end" type="text" [(ngModel)]="title"
-          placeholder={{titlePlaceholder}}>
+          <ion-input class="ion-text-end" type="text" [(ngModel)]="title" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label>{{'Content' | translate}}</ion-label>
-          <ion-input class="ion-text-end" type="text" [(ngModel)]="content"
-          placeholder={{titlePlaceholder}}>
+          <ion-input class="ion-text-end" type="text" [(ngModel)]="content" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
@@ -100,7 +96,7 @@
           </ion-range>
         </ion-item>
 
-        
+
         <ion-item>
           <ion-label>{{'Break time' | translate}}</ion-label>
           <ion-input class="ion-text-center" type="number" [(ngModel)]="breakTime">
@@ -123,7 +119,8 @@
 
         <ion-item>
           <ion-label>{{'Timer off' | translate}}</ion-label>
-          <ion-datetime display-format="h:mm A" placeholder="{{'Option' | translate}}" picker-format="h:mm A" [(ngModel)]="timerOff">
+          <ion-datetime display-format="h:mm A" placeholder="{{'Option' | translate}}" picker-format="h:mm A"
+            [(ngModel)]="timerOff">
           </ion-datetime>
         </ion-item>
 

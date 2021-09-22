@@ -48,10 +48,18 @@
     "en": "English",
     "kr": "한글",
     "Drag and Drop": "순서 변경",
+
     "Clear all notifications": "모든 알림 삭제",
         "Do you really want to clear all notifications?": "모든 알림을 삭제하시겠습니까?",
         "Agree": "예",
         "Disagree": "아니요", 
+
+    "Sort by time": "시간순 정렬",
+    "(Customized sorting will disappear)": "(지정한 정렬이 사라집니다.)",
+    "Do you really want to sort by time?": "시간순으로 정렬을 하시겠습니까?",
+    "Customized sorting is On": "맞춤 정렬 사용 중",
+    "Done": "완료",
+        
     "true": "변경 켜짐",
     "false": "변경 꺼짐",
 

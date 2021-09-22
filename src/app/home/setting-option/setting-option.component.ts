@@ -15,15 +15,16 @@ export class SettingOptionComponent {
   public _reorderToggle: boolean;
   public _selectedTheme: String;
   public _selectedLanguage: String;
-  
-  constructor (
+  public _dataListReorded: boolean;
+
+  constructor(
     private modalCtrl: ModalController,
     private storage: Storage,
     private theme: ThemeService,
     public translate: TranslateService,
     public alrCtrl: AlertController
   ) {
-    }
+  }
 
   async dynamicTheme() {
     await this.theme.activeTheme(this._selectedTheme);
@@ -31,15 +32,41 @@ export class SettingOptionComponent {
     await this.storage.set('themeValue', this._selectedTheme)
   }
 
+  sortByTime() {
+    this._dataListReorded = !this._dataListReorded;
+    this.dismissModal();
+  }
+
+  async sortAlert() {
+    const alert = await this.alrCtrl.create({
+      header: this.translate.instant('Sort by time'),
+      subHeader: this.translate.instant('(Customized sorting will disappear)'),
+      message: this.translate.instant('Do you really want to sort by time?'),
+      buttons: [
+        {
+          text: this.translate.instant('Agree'),
+          handler: () => this.sortByTime()
+        },
+        {
+          text: this.translate.instant('Disagree'),
+          role: 'cancel',
+        }
+      ]
+    });
+    await alert.present();
+  }
+  
   async deleteAlert() {
     const alert = await this.alrCtrl.create({
       header: this.translate.instant('Clear all notifications'),
       message: this.translate.instant('Do you really want to clear all notifications?'),
       buttons: [
-        { text: this.translate.instant('Agree'),
-        handler: () => this.clear()
+        {
+          text: this.translate.instant('Agree'),
+          handler: () => this.clear()
         },
-        { text: this.translate.instant('Disagree'),
+        {
+          text: this.translate.instant('Disagree'),
           role: 'cancel',
         }
       ]
@@ -50,11 +77,15 @@ export class SettingOptionComponent {
   async dismissModal() {
     await this.storage.remove('languageValue');
     await this.storage.set('languageValue', this._selectedLanguage)
-    await this.modalCtrl.dismiss(this._reorderToggle);
+    await this.modalCtrl.dismiss([this._reorderToggle, this._dataListReorded]);
   }
-  
-  ionViewDidEnter() {
+
+  reorderToggleEnterToHome() {
+    if (this._reorderToggle == false) {
+      setTimeout(() => this.dismissModal(), 300)
+    }
   }
+
 
   async getPending() {
     let pending = await LocalNotifications.getPending();
@@ -64,7 +95,6 @@ export class SettingOptionComponent {
 
   async clear() {
     await LocalNotifications.getPending().then(list => {
-      console.log('getPending():', list);
       if (!list.notifications.length) return;
       const notifications = list.notifications.map(li => { return { id: li.id }; });
       return LocalNotifications.cancel({ notifications })

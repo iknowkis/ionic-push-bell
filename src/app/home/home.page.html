@@ -17,37 +17,38 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-item *ngIf="reorderToggle" color="primary">
+    {{'Customized sorting is On' | translate}}
+    <ion-text slot="end" (click)="reorderDone()">
+      {{'Done' | translate}}
+    </ion-text>
+  </ion-item>
   <ion-reorder-group (ionItemReorder)="onItemReorder($event)" [disabled]="!reorderToggle">
     <ion-card *ngFor="let dataList of storageData" class={{deactivatedIonCard(dataList)}}>
       <ion-reorder>
         <ion-item>
-          <ion-icon *ngIf="dataList[0].extra.workTime == 0" name="alarm-outline"
-              slot="start"></ion-icon>
-          <ion-icon *ngIf="dataList[0].extra.workTime != 0" name="timer-outline"
-              slot="start"></ion-icon>
+          <ion-icon *ngIf="dataList[0].extra.workTime == 0" name="alarm-outline" slot="start"></ion-icon>
+          <ion-icon *ngIf="dataList[0].extra.workTime != 0" name="timer-outline" slot="start"></ion-icon>
           <ion-label>{{dataList[0].title}}</ion-label>
 
-          <ion-button fill="outline" slot="end"
-              (click)="editAlarmModal(dataList[0].extra.key)">{{'Edit' | translate}}
+          <ion-button fill="outline" slot="end" (click)="editAlarmModal(dataList[0].extra.key)">{{'Edit' | translate}}
           </ion-button>
-          <ion-button fill="outline" color="danger" slot="end"
-              (click)="removeAlarm(dataList[0].extra.key)">{{'Del' | translate}}
+          <ion-button fill="outline" color="danger" slot="end" (click)="removeAlarm(dataList[0].extra.key)">{{'Del' |
+            translate}}
           </ion-button>
         </ion-item>
 
-          <ion-card-content style="padding-bottom: 0.6rem; font-size: medium">
+        <ion-card-content style="padding-bottom: 0.6rem; font-size: medium">
           <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute
-            < 10 ? '0' : ''}}{{dataList[0].schedule.on.minute}}
-          </b>
+            < 10 ? '0' : '' }}{{dataList[0].schedule.on.minute}} </b>
 
-          <b *ngIf="dataList[0].extra.workTime">
-            - {{dataList[0].extra.timerOff.getHours()}}:{{dataList[0].extra.timerOff.getMinutes()
-            < 10 ? '0' : ''}}{{dataList[0].extra.timerOff.getMinutes()}}
-          </b>
+              <b *ngIf="dataList[0].extra.workTime">
+                - {{dataList[0].extra.timerOff.getHours()}}:{{dataList[0].extra.timerOff.getMinutes()
+                < 10 ? '0' : '' }}{{dataList[0].extra.timerOff.getMinutes()}} </b>
 
-          <ion-chip *ngIf="dataList[0].extra.deactivateValue.value == false" color="danger">
-            <b>{{'Deactivated' | translate}}</b>
-          </ion-chip>
+                  <ion-chip *ngIf="dataList[0].extra.deactivateValue.value == false" color="danger">
+                    <b>{{'Deactivated' | translate}}</b>
+                  </ion-chip>
         </ion-card-content>
 
         <ion-card-content style="padding-top:0px; padding-right:2px">
@@ -60,7 +61,7 @@
               {{getWeekday(data) | translate}}
             </ion-chip>
           </ion-col>
-          
+
           <ion-chip *ngIf="dataList[0].extra.workTime" outline color="primary">
             {{'Work' | translate}}: {{dataList[0].extra.workTime}}m
           </ion-chip>

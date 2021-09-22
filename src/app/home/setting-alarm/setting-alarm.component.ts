@@ -14,7 +14,7 @@ export class SettingAlarmComponent {
   toolbarColor = 'warning'
   headerTitle = 'Add push'
   title: string = null
-  titlePlaceholder: string = `${new Date().getMonth()}/${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes() < 10 ? '0'+new Date().getMinutes():new Date().getMinutes()}`;
+  titlePlaceholder: string = `${new Date().getMonth()}/${new Date().getDate()} ${new Date().getHours()}:${new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()}`;
   content: string = null
   notifications = []
   time: Date;
@@ -27,8 +27,8 @@ export class SettingAlarmComponent {
   breakTime = 0
   breakCount = 0
   statusArray = [
-    {name: 'Activate', value: true},
-    {name: 'Deactivate', value: false}
+    { name: 'Activate', value: true },
+    { name: 'Deactivate', value: false }
   ]
   // Default statusValue is 'true'
   statusValue = this.statusArray[0];
@@ -50,28 +50,27 @@ export class SettingAlarmComponent {
     onTime = onTime - (onTime % (60 * 1000));
 
     // Exception 처리로 count 10번으로 세팅
-    let count = this.breakCount == 0 && this.breakTime!=0 && this.timerOff==undefined ?
+    let count = this.breakCount == 0 && this.breakTime != 0 && this.timerOff == undefined ?
       10 : this.breakCount;
     this.breakCount = count; // 위에 합치기 // 예외 처리로 10 지정해준 거 반영
 
     // 푸시 마감 시간 지정
-    let offTime = count==0 ? Date.parse(this.timerOff?.toString()) :
+    let offTime = count == 0 ? Date.parse(this.timerOff?.toString()) :
       onTime + ((this.workTime + this.breakTime) * count * 1000 * 60);
 
     // break count만 입력되었다면 푸시 마감 시간 지정
     // ****** timerOff 실시간 반영되도록 수정해야 함 ********
-    this.timerOff = count==0 ? this.timerOff : new Date(offTime);
+    this.timerOff = count == 0 ? this.timerOff : new Date(offTime);
     if (this.workTime) {
       while (onTime < offTime) {
         await this.workNotificaiton(uuid, new Date(onTime));
 
         onTime += await (this.workTime * 1000 * 60);
         await this.breakNotificaiton(uuid, onTime, count);
-        
-        onTime += await (this.breakTime * 1000 * 60);
-        await console.log('onTime 3: ', onTime);
 
-        if(await this.breakCount!=0) {
+        onTime += await (this.breakTime * 1000 * 60);
+
+        if (await this.breakCount != 0) {
           await count--;
           if (await count == 0) break;
         }
@@ -81,7 +80,7 @@ export class SettingAlarmComponent {
       await this.workNotificaiton(uuid, new Date(onTime))
     }
     // 편집 시 기존 데이터 삭제
-    if(this.keyForEdit.length > 0) {await this.removeAlarm(this.keyForEdit);}
+    if (this.keyForEdit.length > 0) { await this.removeAlarm(this.keyForEdit); }
     // DB 저장
     await console.log('Before save on storage:', this.notifications);
     await this.storage.set(uuid, this.notifications)
@@ -94,70 +93,69 @@ export class SettingAlarmComponent {
     await this.dismissModal();
   }
 
-  async workNotificaiton(key:string, time:Date) {
+  async workNotificaiton(key: string, time: Date) {
     var notificationSetting: object = []
-    
-    if(this.weekday.length==0) {this.weekday = [time.getDay()]}
-      this.weekday.forEach(async day => {
-        notificationSetting = {
-          title: this.title == null ? this.titlePlaceholder : this.title,
-          body: this.content == null ? this.titlePlaceholder : this.content,
-          id: Math.floor(Math.random() * Math.pow(10,8)),
-          schedule: {
-            on: {
-              weekday: +day,
-              hour: time.getHours(),
-              minute: time.getMinutes(),
-              second: 0,
-            },
-            at: time, // 삭제해야 하나?
+
+    if (this.weekday.length == 0) { this.weekday = [time.getDay()] }
+    this.weekday.forEach(async day => {
+      notificationSetting = {
+        title: this.title == null ? this.titlePlaceholder : this.title,
+        body: this.content == null ? this.titlePlaceholder : this.content,
+        id: Math.floor(Math.random() * Math.pow(10, 8)),
+        schedule: {
+          on: {
+            weekday: +day,
+            hour: time.getHours(),
+            minute: time.getMinutes(),
+            second: 0,
           },
-          extra: {
-            key: key,
-            time: time,
-            timerOff: new Date(this.timerOff),
-            workTime: this.workTime,
-            breakTime: this.breakTime,
-            breakCount: this.breakCount,
-            deactivateValue: this.statusValue,
-          },
-          sound: "beep.wav"
-        }
-        await this.notifications.push(notificationSetting);
-      })
+          at: time, // 삭제해야 하나?
+        },
+        extra: {
+          key: key,
+          time: time,
+          timerOff: new Date(this.timerOff),
+          workTime: this.workTime,
+          breakTime: this.breakTime,
+          breakCount: this.breakCount,
+          deactivateValue: this.statusValue,
+        },
+        sound: "beep.wav"
+      }
+      await this.notifications.push(notificationSetting);
+    })
   }
 
-  async breakNotificaiton(key: string, time: number, count:number) {
+  async breakNotificaiton(key: string, time: number, count: number) {
     var breakNotificationSetting: object = []
     const timeForBreak = new Date(time)
-    console.log('breakTime:',timeForBreak);
-    if(this.weekday.length==0) {this.weekday = [timeForBreak.getDay()]}
+    if (this.weekday.length == 0) { this.weekday = [timeForBreak.getDay()] }
     this.weekday.forEach(async day => {
-    breakNotificationSetting={
-          title: this.translate.instant(`It's time for a break 😀`),
-          body: `Count for break: ${this.breakCount+1-count}/${this.breakCount}`,
-          id: Math.floor(Math.random() * Math.pow(10,8)),
-          schedule: {
-            on: {
-              weekday: +day,
-              hour: timeForBreak.getHours(),
-              minute: timeForBreak.getMinutes(),
-              second: 0,
-            },
-            at: timeForBreak,
+      breakNotificationSetting = {
+        title: this.translate.instant(`It's time for a break 😀`),
+        body: `${this.translate.instant('Count for break')}: ${this.breakCount + 1 - count}/${this.breakCount}`,
+        id: Math.floor(Math.random() * Math.pow(10, 8)),
+        schedule: {
+          on: {
+            weekday: +day,
+            hour: timeForBreak.getHours(),
+            minute: timeForBreak.getMinutes(),
+            second: 0,
           },
-          extra: {
-            key: key,
-            timerOff: new Date(this.timerOff),
-            workTime: this.workTime,
-            breakTime: this.breakTime,
-            breakCount: this.breakCount,
-          },
-          sound: "beep.wav"
-        }
-    return await this.notifications.push(breakNotificationSetting);
-  })
-}
+          at: timeForBreak,
+        },
+        extra: {
+          key: key,
+          timerOff: new Date(this.timerOff),
+          workTime: this.workTime,
+          breakTime: this.breakTime,
+          breakCount: this.breakCount,
+        },
+        sound: "beep.wav"
+      }
+      return await this.notifications.push(breakNotificationSetting);
+    })
+  }
 
   set(key: string, value: any) {
     this._storage?.set(key, value);
@@ -165,7 +163,7 @@ export class SettingAlarmComponent {
 
   async removeAlarm(key) {
     await this.storage.get(key).then(async list => {
-      console.log('remove:',list);
+      console.log('remove:', list);
       const cancelOptions = { notifications: list };
       await LocalNotifications.cancel(cancelOptions);
     });
@@ -181,7 +179,7 @@ export class SettingAlarmComponent {
 
   ionViewDidEnter() {
     this.slides.update();
-    this.weekday.forEach((v,k)=> this.weekdayPlaceholder.push(" "+this.weekdays[v]))
+    this.weekday.forEach((v, k) => this.weekdayPlaceholder.push(" " + this.weekdays[v]))
   }
 
   async lockSwipes(lock: boolean) {

@@ -49,10 +49,18 @@
     "en": "English",
     "kr": "한글",
     "Drag and Drop": "Drag and Drop",
+
     "Clear all notifications": "Clear all notifications",
         "Do you really want to clear all notifications?": "Do you really want to clear all notifications?",
         "Agree": "Agree",
         "Disagree": "Disagree",
+    
+    "Sort by time": "Sort by time",
+    "(Customized sorting will disappear)": "(Customized sorting will disappear)",
+    "Do you really want to sort by time?": "Do you really want to sort by time?",
+    "Customized sorting is On": "Customized sorting is On",
+    "Done": "Done",
+
     "true": "Reorder On",
     "false": "Reorder Off",
 

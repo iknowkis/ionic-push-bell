@@ -35,8 +35,7 @@
       </ion-label>
     </ion-item>
     <ion-item color="light">
-      <ion-select #langSelect [(ngModel)]="this._selectedLanguage"
-        (ionChange)="translate.use(langSelect.value)" slot="end">
+      <ion-select #langSelect [(ngModel)]="_selectedLanguage" (ionChange)="translate.use(langSelect.value)" slot="end">
         <ion-select-option *ngFor="let lang of translate.getLangs()" [value]="lang" [translate]="lang">
           {{ lang | translate}}
         </ion-select-option>
@@ -47,16 +46,23 @@
   <ion-card>
     <ion-item>
       <ion-label>
-      <ion-icon name="swap-vertical-outline">
-      </ion-icon>
-      {{'Drag and Drop' | translate}}
-    </ion-label>
+        <ion-icon name="swap-vertical-outline">
+        </ion-icon>
+        {{'Drag and Drop' | translate}}
+      </ion-label>
+      <ion-text *ngIf="_dataListReorded" color="primary" slot="end">
+        {{'Customized sorting is On' | translate}}
+      </ion-text>
     </ion-item>
     <ion-item color="light">
-    <ion-text slot="end">
-      {{this._reorderToggle.toString() | translate}}
-    </ion-text>
-      <ion-toggle color="dark" slot="end" [(ngModel)]="this._reorderToggle">
+      <ion-button *ngIf="_dataListReorded" color="primary" slot="start" style="margin-right: 0px;"
+        (click)="sortAlert()">
+        {{'Sort by time' | translate}}
+      </ion-button>
+      <ion-text slot="end">
+        {{_reorderToggle.toString() | translate}}
+      </ion-text>
+      <ion-toggle color="dark" slot="end" [(ngModel)]="_reorderToggle" (click)="reorderToggleEnterToHome()">
       </ion-toggle>
     </ion-item>
   </ion-card>
@@ -64,10 +70,10 @@
   <ion-card>
     <ion-item>
       <ion-label>
-      <ion-icon name="close-circle-outline">
-      </ion-icon>
-      {{'Clear all notifications' | translate}}
-    </ion-label>
+        <ion-icon name="close-circle-outline">
+        </ion-icon>
+        {{'Clear all notifications' | translate}}
+      </ion-label>
     </ion-item>
     <ion-item color="light">
       <ion-icon name="trash-outline" slot="end" color="danger" (click)="deleteAlert()">
@@ -76,7 +82,6 @@
   </ion-card>
 </ion-content>
 
-
-<ion-button (click)="getPending()">
+<!-- <ion-button (click)="getPending()">
     pending
-</ion-button>
+</ion-button> -->
