@@ -36,3 +36,4 @@ npm-debug.log*
 /e2e/ 
 android/app/capacitor.build.gradle
 android/capacitor.settings.gradle
+package-lock.json

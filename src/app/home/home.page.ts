@@ -17,9 +17,9 @@ export class HomePage implements OnInit {
   public storageData: Array<Array<LocalNotificationSchema>> = []
   public weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   public reorderToggle = false;
+  public storageKeys = [];
   public selectedTheme: String;
   public selectedLanguage: String;
-  public storageKeys = [];
   public dataListReorded: boolean;
 
   constructor(
@@ -44,12 +44,12 @@ export class HomePage implements OnInit {
     return dataList[0].extra.deactivateValue.value == false ? 'deactivatedIonCard' : '';
   }
 
-  async editAlarmModal(key) {
+  async editAlarmModal(keyForEdit) {
     // const modal = await this.modalController.create({
     //   component: SettingBreakTimerComponent,
     // });
     // return await modal.present();
-    await this.storage.get(key).then(async dataList => {
+    await this.storage.get(keyForEdit).then(async dataList => {
       const data = dataList[0]
 
       let arr = [];
@@ -62,7 +62,7 @@ export class HomePage implements OnInit {
           headerTitle: 'Edit push',
           title: data.title,
           content: data.body,
-          keyForEdit: key,
+          keyForEdit: keyForEdit,
           time: new Date(Date.parse(data.extra.time)).toISOString(),
           weekday: new Set(arr),
           statusValue: data.extra.deactivateValue,
@@ -75,19 +75,23 @@ export class HomePage implements OnInit {
       modal.onDidDismiss().then(async () => {
         if (this.dataListReorded != true) {
           this.dataListReorded = false;
-          this.viewStorageData();
+          await this.storage.set('sortValue', this.dataListReorded)
+          await this.viewStorageData();
         }
         else this.storageData.map(async (list, i) => {
-          if (list[0].extra.key == key) {
-            (await this.storage.keys()).map(async k => {
-              if (k == 'languageValue' || k == 'themeValue') { }
-              else if (this.storageKeys.includes(k) == false) {
-                this.storageData.splice(i, 0, await this.storage.get(k));
-                this.storageKeys.push(k);
+          if (list[0].extra.key == keyForEdit) {
+            await this.storage.forEach(async (value,key) => {
+              if (key == 'languageValue' || key == 'themeValue' ||
+                key == 'sortValue' || key == 'sortedDataList') { }
+              else if (this.storageKeys.includes(key) == false) {
+                this.storageKeys.push(key);
+                console.log('new value: ', value);
+                // this.storageData.splice(i, 0, value);
               }
             })
-            this.storageData.splice(i + 1, 1);
-            this.storageKeys.splice(this.storageKeys.indexOf(key), 1);
+            // this.storageData.splice(i, 1);
+            this.storageKeys.splice(this.storageKeys.indexOf(keyForEdit), 1);
+            await this.storage.set('sortedDataList', this.storageData);
           }
         })
       });
@@ -99,10 +103,10 @@ export class HomePage implements OnInit {
     const modal = await this.modalController.create({
       component: SettingOptionComponent,
       componentProps: {
-        _reorderToggle: this.reorderToggle,
-        _dataListReorded: this.dataListReorded,
         _selectedTheme: this.selectedTheme,
         _selectedLanguage: this.selectedLanguage,
+        _dataListReorded: this.dataListReorded,
+        _reorderToggle: this.reorderToggle,
       }
     });
     modal.present();
@@ -124,21 +128,38 @@ export class HomePage implements OnInit {
   }
   
   async viewStorageData() {
+    console.log('Viewstorage this.dataListReorded', this.dataListReorded);
     const storage = await this.storage.create();
-    //To apply theme
-    await this.storage.get('themeValue').then(async data => {
+
+    // Apply theme
+    await this.storage.get('themeValue').then(data => {
       this.selectedTheme = data == undefined ? 'default' : data;
     });
     await this.theme.activeTheme(this.selectedTheme);
     await this.storage.remove('themeValue');
-    //To translate language
-    await this.storage.get('languageValue').then(async data => {
+
+    // Translate language
+    await this.storage.get('languageValue').then(data => {
       this.selectedLanguage = data == undefined ? 'en' : data;
     });
     await this.translate.addLangs(['en', 'kr']);
     await this.translate.setDefaultLang(this.selectedLanguage as string);
     await this.storage.remove('languageValue');
-    //To get storageData
+    // Get storage sort value
+    await this.storage.get('sortValue').then(data => {
+      this.dataListReorded = data == undefined ? undefined : data;
+    });
+    await this.storage.remove('sortValue');
+
+    // Get storage data list
+    if(this.dataListReorded==true) {
+      this.storage.get('sortedDataList').then(async data => {
+        this.storageData = data;
+      });
+    }
+    await this.storage.remove('sortedDataList');
+
+    // Sort by time
     if (this.dataListReorded != true) {
       if (this.dataListReorded != undefined || this.storageKeys.length != (await storage.keys()).length) {
         this.storageData = [];
@@ -159,6 +180,11 @@ export class HomePage implements OnInit {
 
     await this.storage.set('themeValue', this.selectedTheme)
     await this.storage.set('languageValue', this.selectedLanguage)
+    await this.storage.set('sortValue', this.dataListReorded)
+    if(this.dataListReorded==true) {
+      await this.storage.set('sortedDataList', this.storageData)
+    }
+    console.log('after view dataListReorded',this.dataListReorded);
   }
   
   getWeekday(data) {
@@ -172,6 +198,9 @@ export class HomePage implements OnInit {
       await this.storage.remove(key);
       this.storageData.map((e, i) => e[0].extra.key == list[0].extra.key ? this.storageData.splice(i, 1) : 0);
       this.storageKeys.map((e, i) => e == key ? this.storageKeys.splice(i, 1) : 0);
+      if(this.dataListReorded==true) {
+        await this.storage.set('sortedDataList', this.storageData)
+      }
     })
 
     this.viewStorageData();
@@ -186,6 +215,8 @@ export class HomePage implements OnInit {
     await this.storageData.splice(detail.from - n + 1, 1)
     this.storageData = this.storageData;
     this.dataListReorded = true;
+    await this.storage.set('sortValue', this.dataListReorded)
+    await this.storage.set('sortedDataList', this.storageData)
     detail.complete(true);
   }
 

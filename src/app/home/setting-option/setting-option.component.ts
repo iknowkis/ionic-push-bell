@@ -32,9 +32,10 @@ export class SettingOptionComponent {
     await this.storage.set('themeValue', this._selectedTheme)
   }
 
-  sortByTime() {
+  async sortByTime() {
     this._dataListReorded = !this._dataListReorded;
-    this.dismissModal();
+    await this.storage.set('sortValue', this._dataListReorded)
+    await this.dismissModal();
   }
 
   async sortAlert() {
