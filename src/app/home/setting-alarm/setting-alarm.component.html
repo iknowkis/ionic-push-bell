@@ -7,7 +7,7 @@
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="saveAndDismissModal()">
+      <ion-button (click)="saveAndDismissModal()" [disabled]="time==undefined ? true : false">
         {{'Save' | translate}}
       </ion-button>
     </ion-buttons>
@@ -23,13 +23,13 @@
         </h1>
         <ion-item>
           <ion-label>{{'Title' | translate}}</ion-label>
-          <ion-input class="ion-text-end" type="text" [(ngModel)]="title" placeholder={{titlePlaceholder}}>
+          <ion-input clearInput class="ion-text-end" type="text" [(ngModel)]="title" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label>{{'Content' | translate}}</ion-label>
-          <ion-input class="ion-text-end" type="text" [(ngModel)]="content" placeholder={{titlePlaceholder}}>
+          <ion-input clearInput class="ion-text-end" type="text" [(ngModel)]="content" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
@@ -72,13 +72,13 @@
         </h1>
         <ion-item>
           <ion-label>{{'Title' | translate}}</ion-label>
-          <ion-input class="ion-text-end" type="text" [(ngModel)]="title" placeholder={{titlePlaceholder}}>
+          <ion-input clearInput class="ion-text-end" type="text" [(ngModel)]="title" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 
         <ion-item>
           <ion-label>{{'Content' | translate}}</ion-label>
-          <ion-input class="ion-text-end" type="text" [(ngModel)]="content" placeholder={{titlePlaceholder}}>
+          <ion-input clearInput class="ion-text-end" type="text" [(ngModel)]="content" placeholder={{titlePlaceholder}}>
           </ion-input>
         </ion-item>
 

@@ -80,18 +80,17 @@ export class HomePage implements OnInit {
         }
         else this.storageData.map(async (list, i) => {
           if (list[0].extra.key == keyForEdit) {
-            await this.storage.forEach(async (value,key) => {
+            (await this.storage.keys()).map(async key => {
               if (key == 'languageValue' || key == 'themeValue' ||
                 key == 'sortValue' || key == 'sortedDataList') { }
               else if (this.storageKeys.includes(key) == false) {
                 this.storageKeys.push(key);
-                console.log('new value: ', value);
-                // this.storageData.splice(i, 0, value);
+                this.storageKeys.splice(this.storageKeys.indexOf(keyForEdit), 1);
+                this.storageData.splice(i, 0, (await this.storage.get(key)));
+                this.storageData.splice(i + 1, 1);
+                await this.storage.set('sortedDataList', this.storageData);
               }
             })
-            // this.storageData.splice(i, 1);
-            this.storageKeys.splice(this.storageKeys.indexOf(keyForEdit), 1);
-            await this.storage.set('sortedDataList', this.storageData);
           }
         })
       });
@@ -120,15 +119,12 @@ export class HomePage implements OnInit {
   async ngOnInit() {
     await this.viewStorageData();
     await LocalNotifications.requestPermissions();
-    let pending = await LocalNotifications.getPending();
-    console.log('pending', pending);
     // await LocalNotifications.addListener('localNotificationReceived', (notification) => {
     //   console.log('notification received!!', notification);
     // })
   }
   
   async viewStorageData() {
-    console.log('Viewstorage this.dataListReorded', this.dataListReorded);
     const storage = await this.storage.create();
 
     // Apply theme
@@ -145,6 +141,7 @@ export class HomePage implements OnInit {
     await this.translate.addLangs(['en', 'kr']);
     await this.translate.setDefaultLang(this.selectedLanguage as string);
     await this.storage.remove('languageValue');
+    
     // Get storage sort value
     await this.storage.get('sortValue').then(data => {
       this.dataListReorded = data == undefined ? undefined : data;
@@ -152,12 +149,18 @@ export class HomePage implements OnInit {
     await this.storage.remove('sortValue');
 
     // Get storage data list
-    if(this.dataListReorded==true) {
+    if(this.storageData.length==0 && this.dataListReorded==true) {
       this.storage.get('sortedDataList').then(async data => {
         this.storageData = data;
+        if(data.length==0) {this.dataListReorded = undefined}
       });
     }
     await this.storage.remove('sortedDataList');
+    if(this.storageData.length!=0 && this.storageKeys.length==0) {
+      await this.storageData.map(data=> {
+        this.storageKeys.push(data[0].extra.key)
+      })
+    }
 
     // Sort by time
     if (this.dataListReorded != true) {
@@ -175,8 +178,14 @@ export class HomePage implements OnInit {
         this.dataListReorded = undefined;
       }
     }
-    else (await storage.keys()).map(async key => this.storageKeys.includes(key) ? 0 :
-      [this.storageData.unshift(await storage.get(key)), this.storageKeys.push(key)])
+    else if (this.storageKeys.length != 0) {
+      (await storage.keys()).map(async key => {
+        if (this.storageKeys.includes(key) == false) {
+          this.storageData.unshift(await storage.get(key));
+          this.storageKeys.push(key);
+        }
+      })
+    }
 
     await this.storage.set('themeValue', this.selectedTheme)
     await this.storage.set('languageValue', this.selectedLanguage)
@@ -184,7 +193,6 @@ export class HomePage implements OnInit {
     if(this.dataListReorded==true) {
       await this.storage.set('sortedDataList', this.storageData)
     }
-    console.log('after view dataListReorded',this.dataListReorded);
   }
   
   getWeekday(data) {
