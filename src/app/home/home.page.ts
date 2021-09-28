@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalNotifications, LocalNotificationSchema } from '@capacitor/local-notifications';
+import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
 import { ModalController } from '@ionic/angular';
 import { SettingAlarmComponent } from './setting-alarm/setting-alarm.component';
 import { Storage } from '@ionic/storage';
@@ -14,7 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  public storageData: Array<Array<LocalNotificationSchema>> = []
+  public storageData: Array<Array<any>> = []
   public weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   public reorderToggle = false;
   public storageKeys = [];
@@ -41,7 +41,7 @@ export class HomePage implements OnInit {
   }
 
   deactivatedIonCard(dataList) {
-    return dataList[0].extra.deactivateValue.value == false ? 'deactivatedIonCard' : '';
+    return dataList[0].data.deactivateValue.value == false ? 'deactivatedIonCard' : '';
   }
 
   async editAlarmModal(keyForEdit) {
@@ -63,13 +63,13 @@ export class HomePage implements OnInit {
           title: data.title,
           content: data.body,
           keyForEdit: keyForEdit,
-          time: new Date(Date.parse(data.extra.time)).toISOString(),
+          time: new Date(Date.parse(data.data.time)).toISOString(),
           weekday: new Set(arr),
-          statusValue: data.extra.deactivateValue,
-          timerOff: data.extra.timerOff != 'Invalid Date' ? new Date(Date.parse(data.extra.timerOff)).toISOString() : 0,
-          workTime: data.extra.workTime,
-          breakTime: data.extra.breakTime,
-          breakCount: data.extra.breakCount,
+          statusValue: data.data.deactivateValue,
+          timerOff: data.data.timerOff != 'Invalid Date' ? new Date(Date.parse(data.data.timerOff)).toISOString() : 0,
+          workTime: data.data.workTime,
+          breakTime: data.data.breakTime,
+          breakCount: data.data.breakCount,
         },
       });
       modal.onDidDismiss().then(async () => {
@@ -79,7 +79,7 @@ export class HomePage implements OnInit {
           await this.viewStorageData();
         }
         else this.storageData.map(async (list, i) => {
-          if (list[0].extra.key == keyForEdit) {
+          if (list[0].data.key == keyForEdit) {
             (await this.storage.keys()).map(async key => {
               if (key == 'languageValue' || key == 'themeValue' ||
                 key == 'sortValue' || key == 'sortedDataList') { }
@@ -118,7 +118,7 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
     await this.viewStorageData();
-    await LocalNotifications.requestPermissions();
+    await LocalNotifications.requestPermission();
     // await LocalNotifications.addListener('localNotificationReceived', (notification) => {
     //   console.log('notification received!!', notification);
     // })
@@ -158,7 +158,7 @@ export class HomePage implements OnInit {
     await this.storage.remove('sortedDataList');
     if(this.storageData.length!=0 && this.storageKeys.length==0) {
       await this.storageData.map(data=> {
-        this.storageKeys.push(data[0].extra.key)
+        this.storageKeys.push(data[0].data.key)
       })
     }
 
@@ -172,7 +172,7 @@ export class HomePage implements OnInit {
           this.storageKeys.push(key)
         })
         this.storageData.sort((firstEl: any, nextEl: any) =>
-          (nextEl[0].extra.deactivateValue.value - firstEl[0].extra.deactivateValue.value) ||
+          (nextEl[0].data.deactivateValue.value - firstEl[0].data.deactivateValue.value) ||
           (firstEl[0].schedule.on.hour - nextEl[0].schedule.on.hour) ||
           (firstEl[0].schedule.on.minute - nextEl[0].schedule.on.minute))
         this.dataListReorded = undefined;
@@ -204,7 +204,7 @@ export class HomePage implements OnInit {
       const cancelOptions = { notifications: list };
       await LocalNotifications.cancel(cancelOptions);
       await this.storage.remove(key);
-      this.storageData.map((e, i) => e[0].extra.key == list[0].extra.key ? this.storageData.splice(i, 1) : 0);
+      this.storageData.map((e, i) => e[0].data.key == list[0].data.key ? this.storageData.splice(i, 1) : 0);
       this.storageKeys.map((e, i) => e == key ? this.storageKeys.splice(i, 1) : 0);
       if(this.dataListReorded==true) {
         await this.storage.set('sortedDataList', this.storageData)
