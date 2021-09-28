@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="light">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="editSettingOption()">
         <ion-icon name="build-outline" color="primary"></ion-icon>
@@ -31,16 +31,20 @@
           <ion-icon *ngIf="dataList[0].data.workTime != 0" name="timer-outline" slot="start"></ion-icon>
           <ion-label>{{dataList[0].title}}</ion-label>
 
-          <ion-button fill="outline" slot="end" (click)="editAlarmModal(dataList[0].data.key)">{{'Edit' | translate}}
+          <select>
+          <option><ion-button fill="outline" slot="end" (click)="editAlarmModal(dataList[0].data.key)">{{'Edit' | translate}}
           </ion-button>
-          <ion-button fill="outline" color="danger" slot="end" (click)="removeAlarm(dataList[0].data.key)">{{'Del' |
+        </option>
+          <option><ion-button fill="outline" color="danger" slot="end" (click)="removeAlarm(dataList[0].data.key)">{{'Del' |
             translate}}
           </ion-button>
+        </option>
+        </select>
         </ion-item>
 
         <ion-card-content style="padding-bottom: 0.6rem">
-          <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute
-            < 10 ? '0' : '' }}{{dataList[0].schedule.on.minute}} </b>
+          <b>{{dataList[0].trigger.every.hour}}:{{dataList[0].trigger.every.minute
+            < 10 ? '0' : '' }}{{dataList[0].trigger.every.minute}} </b>
 
               <b *ngIf="dataList[0].data.workTime">
                 - {{dataList[0].data.timerOff.getHours()}}:{{dataList[0].data.timerOff.getMinutes()

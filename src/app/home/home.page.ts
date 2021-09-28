@@ -53,7 +53,7 @@ export class HomePage implements OnInit {
       const data = dataList[0]
 
       let arr = [];
-      dataList.map((e: any) => arr.push(e.schedule.on.weekday));
+      dataList.map((e: any) => arr.push(e.trigger.every.weekday));
 
       const modal = await this.modalController.create({
         component: SettingAlarmComponent,
@@ -173,8 +173,8 @@ export class HomePage implements OnInit {
         })
         this.storageData.sort((firstEl: any, nextEl: any) =>
           (nextEl[0].data.deactivateValue.value - firstEl[0].data.deactivateValue.value) ||
-          (firstEl[0].schedule.on.hour - nextEl[0].schedule.on.hour) ||
-          (firstEl[0].schedule.on.minute - nextEl[0].schedule.on.minute))
+          (firstEl[0].trigger.every.hour - nextEl[0].trigger.every.hour) ||
+          (firstEl[0].trigger.every.minute - nextEl[0].trigger.every.minute))
         this.dataListReorded = undefined;
       }
     }
@@ -196,7 +196,7 @@ export class HomePage implements OnInit {
   }
   
   getWeekday(data) {
-    return this.weekdays[data.schedule.on.weekday].slice(0, 3).toUpperCase()
+    return this.weekdays[data.trigger.every.weekday].slice(0, 3).toUpperCase()
   }
 
   async removeAlarm(key) {
