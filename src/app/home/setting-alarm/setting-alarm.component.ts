@@ -107,6 +107,7 @@ export class SettingAlarmComponent {
             hour: time.getHours(),
             minute: time.getMinutes(),
           },
+          count: 1000,
         },
         data: {
           key: key,
@@ -138,6 +139,7 @@ export class SettingAlarmComponent {
             hour: timeForBreak.getHours(),
             minute: timeForBreak.getMinutes(),
           },
+          count: 1000,
         },
         data: {
           key: key,

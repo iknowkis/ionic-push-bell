@@ -31,15 +31,10 @@
           <ion-icon *ngIf="dataList[0].data.workTime != 0" name="timer-outline" slot="start"></ion-icon>
           <ion-label>{{dataList[0].title}}</ion-label>
 
-          <select>
-          <option><ion-button fill="outline" slot="end" (click)="editAlarmModal(dataList[0].data.key)">{{'Edit' | translate}}
-          </ion-button>
-        </option>
-          <option><ion-button fill="outline" color="danger" slot="end" (click)="removeAlarm(dataList[0].data.key)">{{'Del' |
+          <ion-button fill="outline" slot="end" (click)="editAlarmModal(dataList[0].data.key)">{{'Edit' | translate}}
+          </ion-button><ion-button fill="outline" color="danger" slot="end" (click)="removeAlarm(dataList[0].data.key)">{{'Del' |
             translate}}
           </ion-button>
-        </option>
-        </select>
         </ion-item>
 
         <ion-card-content style="padding-bottom: 0.6rem">
@@ -57,7 +52,7 @@
 
         <ion-card-content style="padding-top:0px; padding-right:2px">
           <div class="ion-margin-bottom">
-            {{dataList[0].body}}
+            {{dataList[0].text}}
           </div>
 
           <ion-col *ngFor="let data of dataList">
