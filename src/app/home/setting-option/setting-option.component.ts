@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LocalNotifications } from '@capacitor/local-notifications';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AlertController, ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { TranslateService } from '@ngx-translate/core';
@@ -87,20 +87,14 @@ export class SettingOptionComponent {
     }
   }
 
-
   async getPending() {
-    let pending = await LocalNotifications.getPending();
+    let pending = await LocalNotifications.getAll();
     console.log('pending', pending);
     this.dismissModal();
   }
 
   async clear() {
-    await LocalNotifications.getPending().then(list => {
-      if (!list.notifications.length) return;
-      const notifications = list.notifications.map(li => { return { id: li.id }; });
-      return LocalNotifications.cancel({ notifications })
-    });
-    await LocalNotifications.removeAllListeners();
+    await LocalNotifications.cancelAll
     await await this.storage.clear();
     this.dismissModal();
   }

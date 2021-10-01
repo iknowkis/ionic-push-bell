@@ -11,12 +11,11 @@ ion-chip {
     margin: 2px;
 }
 
-.deactivatedIonCard {
-    background: #c0c0c0;
+body.default .deactivatedIonCard {
+    --ion-card-background: #1c1c1d;
 }
 
-@media (prefers-color-scheme: dark) {
-    .deactivatedIonCard {
-        background: #000000;
-    }
+body.dark-theme.deactivatedIonCard {
+    --ion-card-background: #000000;
+    --ion-item-background: #4e4e4e;
 }

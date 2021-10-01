@@ -29,11 +29,12 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+/resources
 
 
 .history
-/android/
-/e2e/ 
+/android
+/e2e
 android/app/capacitor.build.gradle
 android/capacitor.settings.gradle
 package-lock.json

@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="light">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="editSettingOption()">
         <ion-icon name="build-outline" color="primary"></ion-icon>
@@ -27,51 +27,50 @@
     <ion-card *ngFor="let dataList of storageData" class={{deactivatedIonCard(dataList)}}>
       <ion-reorder>
         <ion-item>
-          <ion-icon *ngIf="dataList[0].extra.workTime == 0" name="alarm-outline" slot="start"></ion-icon>
-          <ion-icon *ngIf="dataList[0].extra.workTime != 0" name="timer-outline" slot="start"></ion-icon>
+          <ion-icon *ngIf="dataList[0].data.workTime == 0" name="alarm-outline" slot="start"></ion-icon>
+          <ion-icon *ngIf="dataList[0].data.workTime != 0" name="timer-outline" slot="start"></ion-icon>
           <ion-label>{{dataList[0].title}}</ion-label>
 
-          <ion-button fill="outline" slot="end" (click)="editAlarmModal(dataList[0].extra.key)">{{'Edit' | translate}}
-          </ion-button>
-          <ion-button fill="outline" color="danger" slot="end" (click)="removeAlarm(dataList[0].extra.key)">{{'Del' |
+          <ion-button fill="outline" slot="end" (click)="editAlarmModal(dataList[0].data.key)">{{'Edit' | translate}}
+          </ion-button><ion-button fill="outline" color="danger" slot="end" (click)="removeAlarm(dataList[0].data.key)">{{'Del' |
             translate}}
           </ion-button>
         </ion-item>
 
         <ion-card-content style="padding-bottom: 0.6rem">
-          <b>{{dataList[0].schedule.on.hour}}:{{dataList[0].schedule.on.minute
-            < 10 ? '0' : '' }}{{dataList[0].schedule.on.minute}} </b>
+          <b>{{dataList[0].trigger.every.hour}}:{{dataList[0].trigger.every.minute
+            < 10 ? '0' : '' }}{{dataList[0].trigger.every.minute}} </b>
 
-              <b *ngIf="dataList[0].extra.workTime">
-                - {{dataList[0].extra.timerOff.getHours()}}:{{dataList[0].extra.timerOff.getMinutes()
-                < 10 ? '0' : '' }}{{dataList[0].extra.timerOff.getMinutes()}} </b>
+              <b *ngIf="dataList[0].data.workTime">
+                - {{dataList[0].data.timerOff.getHours()}}:{{dataList[0].data.timerOff.getMinutes()
+                < 10 ? '0' : '' }}{{dataList[0].data.timerOff.getMinutes()}} </b>
 
-                  <ion-chip *ngIf="dataList[0].extra.deactivateValue.value == false" color="danger">
+                  <ion-chip *ngIf="dataList[0].data.deactivateValue.value == false" color="danger">
                     <b>{{'Deactivated' | translate}}</b>
                   </ion-chip>
         </ion-card-content>
 
         <ion-card-content style="padding-top:0px; padding-right:2px">
           <div class="ion-margin-bottom">
-            {{dataList[0].body}}
+            {{dataList[0].text}}
           </div>
 
           <ion-col *ngFor="let data of dataList">
-            <ion-chip *ngIf="data.extra.workTime == 0" outline color="medium">
+            <ion-chip *ngIf="data.data.workTime == 0" outline color="medium">
               {{getWeekday(data) | translate}}
             </ion-chip>
           </ion-col>
 
-          <ion-chip *ngIf="dataList[0].extra.workTime" outline color="primary">
-            {{'Work' | translate}}: {{dataList[0].extra.workTime}}m
+          <ion-chip *ngIf="dataList[0].data.workTime" outline color="primary">
+            {{'Work' | translate}}: {{dataList[0].data.workTime}}m
           </ion-chip>
 
-          <ion-chip *ngIf="dataList[0].extra.breakTime" outline color="danger">
-            {{'Break' | translate}}: {{dataList[0].extra.breakTime}}m
+          <ion-chip *ngIf="dataList[0].data.breakTime" outline color="danger">
+            {{'Break' | translate}}: {{dataList[0].data.breakTime}}m
           </ion-chip>
 
-          <ion-chip *ngIf="dataList[0].extra.breakCount" outline color="danger">
-            {{'Count' | translate}}: {{dataList[0].extra.breakCount}}
+          <ion-chip *ngIf="dataList[0].data.breakCount" outline color="danger">
+            {{'Count' | translate}}: {{dataList[0].data.breakCount}}
           </ion-chip>
         </ion-card-content>
       </ion-reorder>

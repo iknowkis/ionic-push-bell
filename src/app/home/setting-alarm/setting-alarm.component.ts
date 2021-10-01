@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { LocalNotifications } from '@capacitor/local-notifications';
+import { LocalNotifications, ILocalNotification } from '@ionic-native/local-notifications';
 import { IonSlides, ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -86,32 +86,30 @@ export class SettingAlarmComponent {
     await this.storage.set(uuid, this.notifications)
     // Push 보내기
     if (this.statusValue.value == true) {
-      await this.notifications.map(async (e) => {
-        await LocalNotifications.schedule({ notifications: [e] });
-      });
-    }
+        await LocalNotifications.schedule(this.notifications);
+      }
+    
     await this.dismissModal();
   }
 
   async workNotificaiton(key: string, time: Date) {
-    var notificationSetting: object = []
+    let notificationSetting: ILocalNotification;
 
     if (this.weekday.length == 0) { this.weekday = [time.getDay()] }
     this.weekday.forEach(async day => {
       notificationSetting = {
         title: this.title == null ? this.titlePlaceholder : this.title,
-        body: this.content == null ? this.titlePlaceholder : this.content,
+        text: this.content == null ? this.titlePlaceholder : this.content,
         id: Math.floor(Math.random() * Math.pow(10, 8)),
-        schedule: {
-          on: {
+        trigger: {
+          every: {
             weekday: +day,
             hour: time.getHours(),
             minute: time.getMinutes(),
-            second: 0,
           },
-          at: time, // 삭제해야 하나?
+          count: 1000,
         },
-        extra: {
+        data: {
           key: key,
           time: time,
           timerOff: new Date(this.timerOff),
@@ -127,24 +125,23 @@ export class SettingAlarmComponent {
   }
 
   async breakNotificaiton(key: string, time: number, count: number) {
-    var breakNotificationSetting: object = []
+    let breakNotificationSetting: ILocalNotification;
     const timeForBreak = new Date(time)
     if (this.weekday.length == 0) { this.weekday = [timeForBreak.getDay()] }
     this.weekday.forEach(async day => {
       breakNotificationSetting = {
         title: this.translate.instant(`It's time for a break 😀`),
-        body: `${this.translate.instant('Count for break')}: ${this.breakCount + 1 - count}/${this.breakCount}`,
+        text: `${this.translate.instant('Count for break')}: ${this.breakCount + 1 - count}/${this.breakCount}`,
         id: Math.floor(Math.random() * Math.pow(10, 8)),
-        schedule: {
-          on: {
+        trigger: {
+          every: {
             weekday: +day,
             hour: timeForBreak.getHours(),
             minute: timeForBreak.getMinutes(),
-            second: 0,
           },
-          at: timeForBreak,
+          count: 1000,
         },
-        extra: {
+        data: {
           key: key,
           timerOff: new Date(this.timerOff),
           workTime: this.workTime,
