@@ -7,3 +7,7 @@
 | Setting Push  | Setting BreakTimer |
 | ------------- | ------------- |
 | ![preview-3](https://user-images.githubusercontent.com/87289383/133935781-ecb30347-355c-44ac-b26b-5d5efff3c13d.JPG)  | ![preview-4](https://user-images.githubusercontent.com/87289383/133935788-23a8766a-9ce6-45e5-877b-0ea721f24e2f.JPG)  |
+
+| Diagram  |
+| ------------- |
+| ![PushBell - Diagram 01](https://user-images.githubusercontent.com/87289383/138998092-35ba2c85-4808-4c4a-a1c9-ed5d30b42a4e.png)  |
