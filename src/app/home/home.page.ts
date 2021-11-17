@@ -7,6 +7,7 @@ import { SettingOptionComponent } from './setting-option/setting-option.componen
 import { OverlayEventDetail } from '@ionic/core';
 import { ThemeService } from '../services/theme/theme.service';
 import { TranslateService } from '@ngx-translate/core';
+import { AlertService } from '../services/alert/alert.service';
 
 @Component({
   selector: 'app-home',
@@ -27,6 +28,7 @@ export class HomePage implements OnInit {
     private storage: Storage,
     private theme: ThemeService,
     public translate: TranslateService,
+    public alrtService: AlertService,
   ) {
   }
 
@@ -50,7 +52,7 @@ export class HomePage implements OnInit {
     // });
     // return await modal.present();
     await this.storage.get(keyForEdit).then(async dataList => {
-      const data = dataList[0]
+      const data = dataList[0];
 
       let arr = [];
       dataList.map((e: any) => arr.push(e.trigger.every.weekday));
@@ -61,7 +63,7 @@ export class HomePage implements OnInit {
           toolbarColor: 'primary',
           headerTitle: 'Edit push',
           title: data.title,
-          content: data.body,
+          content: data.text,
           keyForEdit: keyForEdit,
           time: new Date(Date.parse(data.data.time)).toISOString(),
           weekday: new Set(arr),
@@ -199,16 +201,22 @@ export class HomePage implements OnInit {
     return this.weekdays[data.trigger.every.weekday].slice(0, 3).toUpperCase()
   }
 
+  removeAlert(key) {
+    this.alrtService.deleteAlert().then(result => {
+      if (result) this.removeAlarm(key);
+    })
+  }
+
   async removeAlarm(key) {
     await this.storage.get(key).then(async list => {
-      const cancelOptions = { notifications: list };
-      await LocalNotifications.cancel(cancelOptions);
       await this.storage.remove(key);
       this.storageData.map((e, i) => e[0].data.key == list[0].data.key ? this.storageData.splice(i, 1) : 0);
       this.storageKeys.map((e, i) => e == key ? this.storageKeys.splice(i, 1) : 0);
       if(this.dataListReorded==true) {
         await this.storage.set('sortedDataList', this.storageData)
       }
+      const cancelOptions = { notifications: list };
+      await LocalNotifications.cancel(cancelOptions);
     })
 
     this.viewStorageData();

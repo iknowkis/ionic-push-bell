@@ -94,8 +94,8 @@ export class SettingOptionComponent {
   }
 
   async clear() {
-    await LocalNotifications.cancelAll
-    await await this.storage.clear();
+    LocalNotifications.cancelAll;
+    await this.storage.clear();
     this.dismissModal();
   }
 }

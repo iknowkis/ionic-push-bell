@@ -176,6 +176,7 @@ export class SettingAlarmComponent {
 
   ionViewDidEnter() {
     this.slides.update();
+    if (this.keyForEdit.length > 0 && this.workTime > 0) this.next(this.slides, 1);
     this.weekday.forEach((v, k) => this.weekdayPlaceholder.push(" " + this.weekdays[v]))
   }
 
